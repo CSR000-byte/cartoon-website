@@ -2,33 +2,25 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🎵 节奏猫步 · 卡创</title>
+<title>🎵 钢琴块 · 卡创</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-#gc{border-radius:var(--radius-lg);border:3px solid rgba(255,255,255,0.12);box-shadow:var(--shadow-float);display:block;margin:0 auto;max-width:100%;background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a1a 100%);}
-.hud{display:flex;justify-content:center;gap:1rem;margin:0.5rem 0;flex-wrap:wrap;}
+#gc{border-radius:var(--radius-lg);border:3px solid rgba(255,255,255,0.12);box-shadow:var(--shadow-float);display:block;margin:0 auto;max-width:100%;background:#0a0a1e;cursor:pointer;touch-action:none;}
+.hud{display:flex;justify-content:center;gap:1rem;margin:0.5rem 0;}
 .hud span{background:var(--bg-card);padding:0.35rem 0.9rem;border-radius:var(--radius-pill);font-family:var(--font-heading);font-size:0.9rem;border:1px solid rgba(255,255,255,0.1);}
-.lane{display:inline-block;width:60px;height:60px;line-height:60px;border-radius:var(--radius-lg);border:2px solid rgba(255,255,255,0.2);background:var(--bg-card);margin:0 10px;font-size:2rem;cursor:pointer;transition:all 0.1s;text-align:center;}
-.lane.p{border-color:var(--color-accent-teal);background:rgba(0,206,201,0.3);transform:scale(0.9);}
 </style>
 </head>
 <body>
 <canvas id="stars-canvas"></canvas>
 <header class="site-header"><div class="nav-container">
-<a href="game.html" class="nav-logo"><span class="logo-icon">🎵</span><span>节奏猫步</span></a>
+<a href="game.html" class="nav-logo"><span class="logo-icon">🎵</span><span>钢琴块</span></a>
 <nav><ul class="nav-links"><li><a href="game.html">🎮游戏厅</a></li><li><a href="index.html">🏠首页</a></li></ul></nav>
 </div></header>
 <main><section class="page-container" style="text-align:center;">
-<h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">🎵 彩虹马节奏猫步</h2>
-<p style="color:var(--text-secondary);margin-bottom:0.5rem;">D F J K四键对应四列！音符落到判定线时按下！P暂停 M静音</p>
+<h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">🎹 星际钢琴块</h2>
+<p style="color:var(--text-secondary);margin-bottom:0.5rem;">点击下落方块得分！别漏掉！P暂停 M静音</p>
 <div class="hud"><span>🎯<b id="s">0</b></span><span>🔥<b id="c">x1</b></span><span>❌<b id="m">0</b></span></div>
-<canvas id="gc" width="700" height="460"></canvas>
-<div style="margin:0.5rem 0;">
-<span class="lane" id="ld" onclick="G.hit(0)">⬅️<div style="font-size:0.7rem;">D</div></span>
-<span class="lane" id="lf" onclick="G.hit(1)">⬇️<div style="font-size:0.7rem;">F</div></span>
-<span class="lane" id="lj" onclick="G.hit(2)">⬆️<div style="font-size:0.7rem;">J</div></span>
-<span class="lane" id="lk" onclick="G.hit(3)">➡️<div style="font-size:0.7rem;">K</div></span>
-</div>
+<canvas id="gc" width="400" height="550"></canvas>
 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
 <button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️暂停</button>
 <button class="btn btn-secondary" onclick="G.restart()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🔄重来</button>
@@ -39,57 +31,63 @@
 <script>
 // 🎵
 let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();
-function pn(f,d,s,t='square',v=0.04){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}
-function bgm(){if(!mo)return;const n=ac.currentTime;[523,494,440,392,349,330,294,330,349,440,494,523,587,659,698,784].forEach((f,i)=>pn(f,0.15,n+i*0.18,'triangle',0.03));setTimeout(bgm,3200);}bgm();
+function pn(f,d,s,t='square',v=0.05){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}
+function bgm(){if(!mo)return;const n=ac.currentTime;[523,659,784,880,784,659,523,440,494,523,587,659,523,440,392,440].forEach((f,i)=>pn(f,0.12,n+i*0.14,'triangle',0.04));setTimeout(bgm,2600);}bgm();
 document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m')mo=!mo;});
 
 // 游戏
 (function(){
 const cv=document.getElementById('gc'),ctx=cv.getContext('2d');
-const W=cv.width,H=cv.height;
-const LN=4,LC=['#6C5CE7','#FF7675','#FDCB6E','#00CEC9'];
-const LX=[140,280,420,560],HY=400,HZ=45;
-let notes=[],particles=[],sc=0,combo=0,best=1,miss=0,go=true,pa=false,spT=0;
+const W=cv.width,H=cv.height,COLS=4,CW=W/COLS;
+let tiles=[],sc=0,combo=0,best=1,miss=0,go=true,pa=false,spd=3,spT=0;
+const colors=['#6C5CE7','#FF7675','#FDCB6E','#00CEC9'];
 
-function spN(){notes.push({l:Math.floor(Math.random()*LN),y:-20,sp:3.5+sc*0.003,hit:false});}
+function spTile(){
+  const col=Math.floor(Math.random()*COLS);
+  tiles.push({col,x:col*CW,y:-60,w:CW-4,h:80,hit:false,c:colors[col]});
+}
 
-document.addEventListener('keydown',e=>{
-  if(e.key.toLowerCase()==='p'){pa=!pa;return;}
+cv.addEventListener('click',e=>{
   if(!go||pa)return;
-  const km={d:0,f:1,j:2,k:3};const l=km[e.key.toLowerCase()];
-  if(l===undefined)return;
-  hitLane(l);
+  const r=cv.getBoundingClientRect();
+  const mx=e.clientX-r.left,my=e.clientY-r.top;
+  let h=false;
+  for(let i=tiles.length-1;i>=0;i--){
+    const t=tiles[i];
+    if(!t.hit&&mx>t.x&&mx<t.x+t.w&&my>t.y&&my<t.y+t.h){
+      t.hit=true;h=true;combo++;if(combo>best)best=combo;
+      sc+=10*(1+Math.floor(combo/10));
+      pn(colors[t.col].replace('#',''),0.1,ac.currentTime,'square',0.08);
+      break;
+    }
+  }
+  if(!h){combo=0;miss++;}
+  updH();
 });
 
 function updH(){document.getElementById('s').textContent=sc;document.getElementById('c').textContent='x'+combo;document.getElementById('m').textContent=miss;}
 
 function upd(){
   if(!go||pa)return;
-  spT++;if(spT>Math.max(35-sc*0.02,16)){spT=0;spN();if(Math.random()<0.3)spN();}
-  notes.forEach(n=>{if(!n.hit)n.y+=n.sp;});
-  for(let i=notes.length-1;i>=0;i--){if(!notes[i].hit&&notes[i].y>HY+HZ){combo=0;miss++;notes.splice(i,1);updH();}if(notes[i].hit||notes[i].y>H+30)notes.splice(i,1);}
-  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.l--;p.vx*=0.93;p.vy*=0.93;});particles=particles.filter(p=>p.l>0);
+  spT++;if(spT>Math.max(45-sc*0.03,20)){spT=0;spTile();if(Math.random()<0.4)spTile();}
+  tiles.forEach(t=>{if(!t.hit)t.y+=spd+sc*0.002;});
+  for(let i=tiles.length-1;i>=0;i--){if(!tiles[i].hit&&tiles[i].y>H+20){combo=0;miss++;tiles.splice(i,1);updH();}if(tiles[i].hit)tiles.splice(i,1);}
 }
 
 function draw(){
   ctx.clearRect(0,0,W,H);
-  // 背景
   const sk=ctx.createLinearGradient(0,0,0,H);sk.addColorStop(0,'#0a0a2e');sk.addColorStop(1,'#1a1a3e');ctx.fillStyle=sk;ctx.fillRect(0,0,W,H);
+  // 轨道线
+  for(let i=0;i<COLS;i++){ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(i*CW,0);ctx.lineTo(i*CW,H);ctx.stroke();}
+  // 方块
+  tiles.forEach(t=>{ctx.fillStyle=t.c;ctx.fillRect(t.x+2,t.y,t.w-4,t.h);ctx.fillStyle='rgba(255,255,255,0.2)';ctx.fillRect(t.x+2,t.y,t.w-4,4);});
   // 判定线
-  ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=2;ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(60,HY);ctx.lineTo(W-60,HY);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(60,HY-HZ,W-120,HZ*2);
-  // 轨道
-  LX.forEach((x,i)=>{ctx.strokeStyle=LC[i]+'33';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();ctx.fillStyle=LC[i];ctx.font='40px sans-serif';ctx.textAlign='center';ctx.fillText(['🟣','🔴','🟡','🟢'][i],x,HY+60);});
-  // 音符
-  notes.forEach(n=>{if(n.hit)return;ctx.fillStyle=LC[n.l];ctx.shadowColor=LC[n.l];ctx.shadowBlur=10;ctx.beginPath();ctx.arc(LX[n.l],n.y,10,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#FFF';ctx.beginPath();ctx.arc(LX[n.l],n.y,5,0,Math.PI*2);ctx.fill();});
-  // 粒子
-  particles.forEach(p=>{ctx.fillStyle=p.c;ctx.globalAlpha=p.l/16;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
-  if(pa){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️暂停',W/2,H/2);}
+  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,H-10);ctx.lineTo(W,H-10);ctx.stroke();
+  if(pa){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#FFF';ctx.font='bold 30px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️',W/2,H/2);}
 }
 
-function hitLane(l){if(!go||pa)return;const el=document.getElementById(['ld','lf','lj','lk'][l]);el.classList.add('p');setTimeout(()=>el.classList.remove('p'),100);let h=false;for(let i=notes.length-1;i>=0;i--){const n=notes[i];if(n.l===l&&!n.hit&&Math.abs(n.y-HY)<HZ){n.hit=true;h=true;combo++;if(combo>best)best=combo;const b=Math.abs(n.y-HY)<15?100:Math.abs(n.y-HY)<30?70:40;sc+=b*(1+Math.floor(combo/15));for(let j=0;j<6;j++)particles.push({x:LX[l],y:HY,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*4-2,l:12+Math.random()*12,c:LC[l],r:Math.random()*2+1});break;}}if(!h){combo=0;miss++;}updH();}
-function rst(){notes=[];particles=[];sc=0;combo=0;best=1;miss=0;go=true;pa=false;spT=0;updH();}
-window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;},hit:hitLane};
+function rst(){tiles=[];sc=0;combo=0;best=1;miss=0;go=true;pa=false;spd=3;spT=0;updH();}
+window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
 
 function loop(){upd();draw();requestAnimationFrame(loop);}
 rst();loop();

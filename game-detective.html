@@ -1,530 +1,109 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔍 企鹅船长的推理桌 · 卡创</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🔍 企鹅船长推理 · 卡创</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-/* === 侦探桌面主题 === */
-body{background:linear-gradient(180deg,#1a0a0a 0%,#2d1810 50%,#1a0c08 100%);}
-.site-header{background:rgba(20,8,4,0.9);border-bottom:2px solid #3d2817;}
-.nav-links a.active{background:#5c3d1a;box-shadow:0 4px 15px rgba(139,90,43,0.4);}
-
-.desk-container{max-width:1000px;margin:0 auto;padding:1.5rem;}
-
-/* 木纹桌面 */
-.desk-top{background:linear-gradient(175deg,#5c3d1a 0%,#4a2e10 20%,#3d2208 50%,#4a2e10 80%,#5c3d1a 100%);border-radius:12px;border:4px solid #2a1505;box-shadow:0 8px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.03);padding:1.5rem;position:relative;overflow:visible;min-height:300px;}
-.desk-top::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 6px);pointer-events:none;}
-.desk-top::after{content:'';position:absolute;top:0;left:0;width:120px;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);pointer-events:none;}
-
-/* 软木板 */
-.cork-board{background:linear-gradient(135deg,#b8956a 0%,#c4a076 30%,#a07848 60%,#c4a076 100%);border-radius:10px;border:6px solid #5c3d1a;box-shadow:0 4px 20px rgba(0,0,0,0.5),inset 0 0 40px rgba(0,0,0,0.2);padding:1.5rem;position:relative;margin-bottom:1.5rem;}
-.cork-board::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 30%,rgba(255,255,255,0.03) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,255,255,0.02) 0%,transparent 50%);pointer-events:none;}
-
-/* 图钉 */
-.pin{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff4444,#880000);box-shadow:0 2px 4px rgba(0,0,0,0.5);display:inline-block;position:absolute;z-index:2;}
-
-/* 红色线索线 */
-.red-string{position:absolute;height:2px;background:#cc2222;transform-origin:left center;z-index:1;opacity:0.7;box-shadow:0 0 4px rgba(200,0,0,0.3);}
-
-/* 证据卡片 */
-.evidence-card{background:linear-gradient(180deg,#faf8f5 0%,#f0ebe0 100%);border:2px solid #d4c8b0;border-radius:6px;padding:1rem;margin:0.5rem;box-shadow:3px 3px 8px rgba(0,0,0,0.3);position:relative;cursor:pointer;transition:all 0.3s;max-width:200px;display:inline-block;vertical-align:top;}
-.evidence-card:hover{transform:rotate(-1deg) translateY(-4px);box-shadow:5px 5px 15px rgba(0,0,0,0.4);}
-.evidence-card.found{border-color:#c8a030;background:linear-gradient(180deg,#fffef5 0%,#fff8d0 100%);box-shadow:3px 3px 12px rgba(200,160,48,0.3);}
-.evidence-card .evidence-icon{font-size:2rem;text-align:center;margin-bottom:0.3rem;}
-.evidence-card .evidence-title{font-family:'Courier New',monospace;font-size:0.8rem;color:#3d2208;font-weight:bold;text-align:center;}
-.evidence-card .evidence-detail{font-size:0.7rem;color:#887050;margin-top:0.3rem;font-style:italic;text-align:center;}
-.evidence-card .tape{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:40px;height:16px;background:rgba(210,180,140,0.5);border-radius:2px;}
-
-/* 嫌疑人卡片 */
-.suspect-photo{background:linear-gradient(180deg,#e8e0d0 0%,#d8d0c0 100%);border:3px solid #fff;border-radius:6px;padding:0.8rem;text-align:center;cursor:pointer;transition:all 0.3s;box-shadow:3px 3px 8px rgba(0,0,0,0.3);min-width:110px;}
-.suspect-photo:hover{transform:scale(1.05);box-shadow:5px 5px 15px rgba(0,0,0,0.4);}
-.suspect-photo.questioned{border-color:#c8a030;background:#fffef0;}
-.suspect-photo .mugshot{font-size:3rem;margin-bottom:0.2rem;}
-.suspect-photo .sus-name{font-family:'Georgia',serif;font-size:1rem;color:#3d2208;font-weight:bold;}
-.suspect-photo .sus-alibi{font-size:0.7rem;color:#887050;margin-top:0.2rem;font-style:italic;}
-.suspect-photo .photo-pin{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#888,#333);margin:0 auto 0.3rem;box-shadow:0 1px 2px rgba(0,0,0,0.3);}
-
-/* 案件文件夹 */
-.case-folder{background:linear-gradient(180deg,#d4b896 0%,#c4a47a 100%);border-radius:4px 12px 12px 4px;padding:1.2rem;border-left:12px solid #8b6914;box-shadow:3px 3px 10px rgba(0,0,0,0.3);margin-bottom:1rem;position:relative;}
-.case-folder .folder-tab{position:absolute;top:-18px;left:20px;background:#c4a47a;padding:4px 20px;border-radius:6px 6px 0 0;font-family:'Courier New',monospace;font-size:0.7rem;color:#3d2208;font-weight:bold;}
-.case-folder h3{font-family:'Georgia',serif;color:#2a1505;font-size:1.4rem;margin-bottom:0.3rem;}
-.case-folder .case-meta{font-family:'Courier New',monospace;font-size:0.75rem;color:#5c3d1a;}
-
-/* 打字机文本 */
-.typewriter{font-family:'Courier New',monospace;color:#2a1505;background:rgba(255,255,240,0.5);padding:0.8rem;border-radius:4px;border-left:3px solid #c8a030;margin:0.8rem 0;font-size:0.85rem;line-height:1.5;}
-
-/* 便签纸 */
-.sticky-note{background:linear-gradient(180deg,#fffde0 0%,#fff9c4 100%);padding:1rem;border-radius:2px;box-shadow:2px 3px 8px rgba(0,0,0,0.2);font-family:'Georgia',serif;color:#3d2208;font-size:0.9rem;max-width:280px;transform:rotate(-2deg);position:relative;}
-.sticky-note::after{content:'';position:absolute;bottom:8px;right:8px;width:30px;height:20px;background:rgba(200,180,140,0.2);border-radius:50%;transform:rotate(15deg);}
-
-/* 指认按钮 */
-.accuse-btn{background:linear-gradient(180deg,#8b0000 0%,#5c0000 100%)!important;color:#fff!important;border:2px solid #ff4444!important;font-family:'Georgia',serif!important;letter-spacing:2px;text-transform:uppercase;animation:none!important;}
-.accuse-btn:hover{background:linear-gradient(180deg,#aa0000 0%,#770000 100%)!important;box-shadow:0 0 20px rgba(255,0,0,0.4)!important;}
-
-/* 打字动画 */
-@keyframes typeIn{from{width:0;}to{width:100%;}}
-.type-anim{overflow:hidden;white-space:nowrap;animation:typeIn 0.8s steps(40);}
-
-/* 放大镜图标旋转 */
-.magnify{display:inline-block;animation:magPulse 2s ease-in-out infinite;}
-@keyframes magPulse{0%,100%{transform:scale(1) rotate(-5deg);}50%{transform:scale(1.2) rotate(5deg);}}
-
-/* 纸张 */
-.paper-sheet{background:linear-gradient(180deg,#fefef8 0%,#f8f4e8 100%);border-radius:3px;padding:1.2rem;box-shadow:2px 2px 6px rgba(0,0,0,0.2),inset 0 0 20px rgba(200,180,140,0.1);font-family:'Georgia',serif;color:#2a1505;position:relative;}
-.paper-sheet::before{content:'';position:absolute;top:0;left:30px;width:1px;height:100%;background:rgba(255,0,0,0.1);}
-
-/* 响应式 */
-@media(max-width:768px){
-  .suspect-grid-evidence{flex-wrap:wrap;}
-  .evidence-card{max-width:140px;}
-}
+.dcase{background:var(--bg-card);border-radius:var(--radius-xl);padding:1.5rem;border:2px solid rgba(0,206,201,0.3);margin-bottom:1rem;}
+.dcase h3{font-family:var(--font-heading);color:var(--color-accent-teal);}
+.clue{display:inline-block;background:var(--bg-glass);border-radius:var(--radius-md);padding:0.6rem 1rem;margin:0.3rem;cursor:pointer;border:2px solid transparent;transition:all 0.3s;font-size:0.85rem;}
+.clue:hover,.clue.found{border-color:var(--color-accent-yellow);background:rgba(253,203,110,0.1);}
+.clue.found{border-color:var(--color-accent-teal);}
+.sus{display:inline-block;background:var(--bg-glass);border-radius:var(--radius-lg);padding:0.8rem;margin:0.3rem;text-align:center;cursor:pointer;border:2px solid transparent;transition:all 0.3s;min-width:80px;}
+.sus:hover,.sus.asked{border-color:var(--color-accent-teal);background:rgba(0,206,201,0.1);}
+.sus .emoji{font-size:2.5rem;}
+.sus .name{font-family:var(--font-heading);}
+.btn-acc{background:var(--color-accent-pink)!important;}
 </style>
 </head>
 <body>
 <canvas id="stars-canvas"></canvas>
-<header class="site-header">
-<div class="nav-container">
-<a href="game.html" class="nav-logo"><span class="logo-icon">🔍</span><span>卡创 · 侦探事务所</span></a>
-<nav><ul class="nav-links" id="navLinks"><li><a href="game.html">🎮 游戏厅</a></li><li><a href="index.html">🏠 首页</a></li></ul></nav>
+<header class="site-header"><div class="nav-container">
+<a href="game.html" class="nav-logo"><span class="logo-icon">🔍</span><span>推理事务所</span></a>
+<nav><ul class="nav-links"><li><a href="game.html">🎮游戏厅</a></li><li><a href="index.html">🏠首页</a></li></ul></nav>
+</div></header>
+<main><section class="page-container">
+<div style="max-width:750px;margin:0 auto;">
+<div style="text-align:center;margin-bottom:1.5rem;">
+<h2 style="font-family:var(--font-heading);">🐧 企鹅船长的推理</h2>
+<p style="color:var(--text-muted);">收集线索→询问嫌疑人→指认真凶！P暂停 M静音</p>
+<div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.5rem;">
+<a href="game.html" class="btn btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🚪退出</a>
 </div>
-</header>
-
-<main><section class="page-container"><div class="desk-container">
-<div class="section-header" style="margin-bottom:1.5rem;">
-<div style="font-family:'Courier New',monospace;color:#c8a030;font-size:0.8rem;letter-spacing:4px;margin-bottom:0.5rem;">★ DETECTIVE DIVISION ★</div>
-<h1 style="font-family:'Georgia',serif;color:#f0e0c0;font-size:2.2rem;">🐧 企鹅船长的推理桌</h1>
-<p style="color:#a08860;font-style:italic;">"真相就像冰箱里的蛋糕——藏不住的。" ——企鹅船长</p>
 </div>
-
-<div class="desk-top">
-<div id="gameRoot"><!-- JS动态渲染 --></div>
+<div id="root"></div>
 </div>
-</div></section></main>
-
-<div class="toast" id="toast"></div>
+</section></main>
 <script src="js/main.js"></script>
-<script>let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();function pn(f,d,s,t='triangle',v=0.03){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}function bgm(){if(!mo)return;const n=ac.currentTime;const m=[262,294,330,262,294,330,349,294,330,349,392,330,262,294,262,220];m.forEach((f,i)=>pn(f,0.4,n+i*0.6,'triangle',0.025));setTimeout(bgm,m.length*600+1000);}bgm();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m'){mo=!mo;showToast(mo?'🔊':'🔇');}});</script>
 <script>
-// === 案件数据库（8个案件保持不变） ===
-const CASES=[{
-  title:'竹炭星星蛋糕失踪案',victim:'胖达',victimEmoji:'🐼',
-  intro:'胖达的竹炭星星蛋糕在冷藏柜里不翼而飞。现场留下了一撮橙色毛发和几个梅花形爪印。企鹅船长将案件档案摊在了桌面上…',
-  clues:[
-    {id:'hair',text:'🔬 橙色毛发样本',detail:'经DNA化验——猫科动物毛发。颜色：橘色。长度：短毛。与某位船员的DNA匹配度：99.7%。',icon:'🧪'},
-    {id:'print',text:'👣 冰箱前爪印照片',detail:'梅花形爪印，尺寸约3.2cm。猫科特有。现场已拍照取证。附比例尺。',icon:'📸'},
-    {id:'crumb',text:'🍰 蛋糕碎屑分析报告',detail:'碎屑上唾液DNA检测结果：含有竹子消化酶。说明食用者近期食用过竹子制品。',icon:'🔬'},
-    {id:'time',text:'🕐 不在场证明时间线',detail:'14:00-14:30期间：彩虹马在糖果铺(有顾客)；火狐在引擎室(有日志)；月兔在通信室(有记录)；小星声称在探险(无人目击)。',icon:'🕐'},
-  ],
-  suspects:[
-    {id:'xing',name:'小星',emoji:'🐱',motive:'曾偷吃胖达蛋糕被当场抓获3次。对甜食无抵抗力。',alibi:'声称在探险，但没人能证实。',guilty:true,confession:'喵…对不起嘛！蛋糕太香了我没忍住！那撮毛是我的，爪印也是。我承认！'},
-    {id:'huo',name:'火狐',emoji:'🦊',motive:'对蛋糕兴趣不大，但可能拿去"做实验"',alibi:'确实在引擎室，工作日志可查',guilty:false,confession:'我？我对甜食没兴趣。我要那个干嘛，做燃料吗？'},
-    {id:'tu',name:'月兔',emoji:'🐰',motive:'喜欢甜食，但爪印不匹配',alibi:'通信室值班，通话记录完整',guilty:false,confession:'我是兔子不是猫！那些爪印明明是猫科的好吧！兔子脚印是长的！'},
-    {id:'ma',name:'彩虹马',emoji:'🦄',motive:'想研究蛋糕配方用于糖果研发',alibi:'糖果铺全天营业，多名顾客可作证',guilty:false,confession:'我确实好奇配方…但我是正经商人！不是小偷！'},
-  ],answer:'xing',
-  conclusion:'企鹅船长合上文件夹，叹了口气："第384次。小星，你什么时候能长点记性？"小星耷拉着耳朵，尾巴在地上画圈圈："但是真的很好吃嘛…"胖达表示：只要小星帮忙做一周蛋糕，就不追究了。'
-},{
-  title:'引擎室爆炸未遂事件',victim:'火狐',victimEmoji:'🦊',
-  intro:'引擎室紧急制动装置被人为改动。火狐发誓这次真的不是自己干的。企鹅船长戴上了白手套，开始调查这起"差点把飞船炸了"的严重事件。',
-  clues:[
-    {id:'tool',text:'🔧 特制扳手',detail:'遗落在引擎室的扳手，刻着"Property of 引擎室"。但奇怪的是——上面没有指纹，被擦拭过。',icon:'🔧'},
-    {id:'note',text:'📝 神秘纸条',detail:'写着："红色按钮别按！"——笔迹歪歪扭扭，像是用嘴叼着笔写出来的。',icon:'📝'},
-    {id:'fur',text:'🧶 黑白毛发样本',detail:'在制动装置旁发现。黑白相间，质地粗短。非猫科、非犬科、非兔科。熊科匹配度：94%。',icon:'🧶'},
-    {id:'log',text:'📋 引擎室门禁记录',detail:'案发前1小时内进入者：企鹅船长(14:05) + 一名未知身份者(14:22)。未知者身高约1.2m。',icon:'📋'},
-  ],
-  suspects:[
-    {id:'penguin',name:'企鹅船长',emoji:'🐧',motive:'例行安全检查，忘了通知火狐',alibi:'确实进去过——但只是常规巡检',guilty:false,confession:'我是去做安全检查！这是我的职责。虽然忘了通知火狐…但我没有碰制动装置。'},
-    {id:'panda',name:'胖达',emoji:'🐼',motive:'引擎室隔壁就是厨房——可能走错门了',alibi:'案发时在做蛋糕，面粉还在身上',guilty:true,confession:'我…我走错门了。引擎室和厨房的门太像了嘛！然后我看到那个红色按钮就…好奇…用嘴写了警告但…太迟了。对不起！'},
-    {id:'xing2',name:'小星',emoji:'🐱',motive:'对按钮有天然冲动',alibi:'在驾驶舱——这一次有监控为证',guilty:false,confession:'这次真的不是我！！有监控为证！我一直在驾驶舱！'},
-    {id:'ma2',name:'彩虹马',emoji:'🦄',motive:'引擎室星光能量可以给糖果"充电"',alibi:'在盘点库存，没去过引擎室',guilty:false,confession:'毛发检测都说了是熊科！我全身上下没一根黑白色的毛！'},
-  ],answer:'panda',
-  conclusion:'胖达低下了毛茸茸的大头："我就是想知道那个红色按钮是干嘛的…"火狐气得尾巴炸成了球："那是紧急制动！！差点炸了飞船！！"企鹅船长冷静地在事故记录本上写下：第947起。'
-},{
-  title:'通信室神秘信号事件',victim:'月兔',victimEmoji:'🐰',
-  intro:'月兔值班时收到来自"喵星总部"的信号，要求转移所有小鱼干。信号追踪显示——发射器就在飞船上。企鹅船长推了推眼镜，打开了信号分析仪…',
-  clues:[
-    {id:'device',text:'📡 隐藏信号发射器',detail:'手工制作的小型设备。焊接粗糙但有创意。外壳上有狐狸毛。发射频率与火狐最近测试的新设备吻合。',icon:'📡'},
-    {id:'voice',text:'🎤 信号录音磁带',detail:'"喵喵喵~这里是喵星总部，请把所有小鱼干转移到3号仓库。重复，所有小鱼干。"——声纹分析：合成音，非真实喵星人。',icon:'🎤'},
-    {id:'skill',text:'⚡ 设备焊接分析',detail:'焊点风格独特——自学成才型。焊锡中含有星尘微粒，是火狐常用材料。附近有9根烧焦的狐狸毛。',icon:'⚡'},
-    {id:'motive',text:'💡 动机分析报告',detail:'谁会恶搞月兔？谁有技术能力？谁喜欢收集小鱼干？三项条件交叉比对，锁定一名嫌疑人。',icon:'💡'},
-  ],
-  suspects:[
-    {id:'huo3',name:'火狐',emoji:'🦊',motive:'有技术+爱恶作剧+想看月兔上当',alibi:'声称在写新发明文档',guilty:true,confession:'哈哈哈哈哈哈对不起！我就是想测试无线电信标…顺便看看月兔会不会上当。她居然真的去翻仓库找小鱼干了哈哈哈哈！'},
-    {id:'xing3',name:'小星',emoji:'🐱',motive:'喜欢小鱼干，但毫无技术能力',alibi:'在驾驶舱——大概吧',guilty:false,confession:'虽然我很想要小鱼干但我连焊枪都拿不稳…'},
-    {id:'panda3',name:'胖达',emoji:'🐼',motive:'喜欢小鱼干但更擅长吃',alibi:'在厨房，全程有监控',guilty:false,confession:'如果是我，信号内容会是"把所有蛋糕"而不是小鱼干。逻辑不对。'},
-    {id:'penguin3',name:'企鹅船长',emoji:'🐧',motive:'想测试船员警惕性',alibi:'有能力但不会这么无聊',guilty:false,confession:'如果是我策划的演习，会比这个严谨一百倍。证据都指向火狐。'},
-  ],answer:'huo3',
-  conclusion:'火狐笑得停不下来："你们应该看看月兔听到小鱼干时的表情！"月兔气鼓鼓地宣布：对火狐实施"通讯频道屏蔽一周"制裁。企鹅船长在案件记录中写下：第948起。'
-},{
-  title:'彩虹马糖果配方泄露案',victim:'彩虹马',victimEmoji:'🦄',
-  intro:'"星光棒棒糖"配方被竞争对手"黑洞甜品店"完美复制！配方只有船员知道。企鹅船长将相关人员的财务记录、通信记录和物证一一摆上桌面…',
-  clues:[
-    {id:'receipt',text:'🧾 可疑转账记录',detail:'胖达账户收到"黑洞甜品店"500星币。胖达声称是"蛋糕模具退款"——但退款方并非模具店。',icon:'🧾'},
-    {id:'paper',text:'📄 垃圾桶碎纸拼图',detail:'碎纸片拼出配方片段。纸张背面有月兔的通信记录编号——说明纸张来自通信室。',icon:'📄'},
-    {id:'email',text:'📧 加密邮件副本',detail:'火狐电脑发出的加密邮件，收件人：黑洞甜品店。邮件附件名称：recipe_encrypted.zip。火狐说这是"加密测试"。',icon:'📧'},
-    {id:'witness',text:'👁️ 目击证词',detail:'企鹅船长深夜目击：有人影进入通信室。身高约1.1m，有尾巴轮廓。时间：凌晨2:47。',icon:'👁️'},
-  ],
-  suspects:[
-    {id:'panda4',name:'胖达',emoji:'🐼',motive:'缺钱买高级食材，有转账记录',alibi:'在厨房——但监控刚好故障了',guilty:false,confession:'那500星币真是退款！我买了个假的"自动和面机"退货了！'},
-    {id:'huo4',name:'火狐',emoji:'🦊',motive:'想测试加密技术——但玩脱了',alibi:'确实发了邮件，坚称是测试',guilty:true,confession:'我只是想测试一下能不能破解黑洞甜品店的防火墙…结果他们反黑了我的电脑，拿走了附件里的配方…真不是故意的！！'},
-    {id:'tu4',name:'月兔',emoji:'🐰',motive:'对彩虹马糖果定价不满',alibi:'通信室值班——但碎纸来自她的纸张',guilty:false,confession:'我是觉得定价太贵！但泄露配方是另一回事好吧！'},
-    {id:'ma4',name:'彩虹马',emoji:'🦄',motive:'理论上可自导自演骗保',alibi:'受害者本人',guilty:false,confession:'我怎么可能泄露自己的命根子配方！星光棒棒糖是我的全部！'},
-  ],answer:'huo4',
-  conclusion:'火狐耷拉着耳朵："黑客攻防这种事…输一次很正常吧…"彩虹马宣布：火狐糖果折扣永久取消+列入黑名单。企鹅船长案件记录：第949起。"黑客攻击"成为飞船年度热词。'
-},{
-  title:'小星被困冰箱事件',victim:'小星',victimEmoji:'🐱',
-  intro:'小星失踪6小时后从冰箱里爬了出来。企鹅船长看着冻得发抖的小星和满地的水渍，意识到这不是意外——冰箱门从外面关上了。而且门外有鱼干诱饵。',
-  clues:[
-    {id:'door',text:'🚪 冰箱门内侧爪痕',detail:'大量猫爪挠痕——小星被困时挣扎了至少4小时。门从外面关闭——需要外力。非意外事件。',icon:'🚪'},
-    {id:'trap',text:'🪤 小鱼干诱饵包装',detail:'冰箱门外发现空的小鱼干包装袋。品牌：喵星牌。购买记录显示——火狐上周购买了3袋。',icon:'🪤'},
-    {id:'timer',text:'⏰ 6小时时间线',detail:'12:00小星闻到了厨房的鱼干味→12:15进入厨房→12:20冰箱门被关闭→18:20企鹅船长巡逻时听到冰箱里的喵喵声。',icon:'⏰'},
-    {id:'laugh',text:'🎭 异常行为报告',detail:'月兔在询问时不断憋笑(声称"想到了一个笑话")。火狐回避眼神接触。胖达主动表示可以提供更多小鱼干。',icon:'🎭'},
-  ],
-  suspects:[
-    {id:'penguin5',name:'企鹅船长',emoji:'🐧',motive:'想给小星一个教训',alibi:'在引擎室安全检查',guilty:false,confession:'虽然我很想——但不是我。不过我也不反对这个结果。'},
-    {id:'huo5',name:'火狐',emoji:'🦊',motive:'小星上周踩坏了她的新发明',alibi:'在仓库——但笑得很可疑',guilty:true,confession:'哈哈哈哈哈哈！我在冰箱门口撒了鱼干！他自己走进去的！我帮他关了门！6小时！完美复仇！！'},
-    {id:'tu5',name:'月兔',emoji:'🐰',motive:'小星说过"月兔工作就是坐着听电话"',alibi:'在通信室——但笑声出卖了她',guilty:false,confession:'火狐告诉了我计划…我没阻止…因为确实太好笑了…'},
-    {id:'panda5',name:'胖达',emoji:'🐼',motive:'小星偷吃太多蛋糕',alibi:'在厨房——提供鱼干给火狐',guilty:false,confession:'我只是提供了道具…具体执行是火狐。但我也不反对。小星确实该受点教训。'},
-  ],answer:'huo5',
-  conclusion:'火狐笑得直不起腰："他在里面还打了个盹！"小星裹着毯子瑟瑟发抖："我要扣你工资！"企鹅船长冷静指出：小星没有发工资的权限。案件记录：第950起。'
-},{
-  title:'走廊企鹅船长涂鸦事件',victim:'企鹅船长',victimEmoji:'🐧',
-  intro:'主走廊被彩虹颜料画满了涂鸦——企鹅船长穿芭蕾舞裙的样子。企鹅船长表示"极其不幽默"。案件关键线索：颜料来自彩虹马的糖果铺，但监控被关了。',
-  clues:[
-    {id:'paint',text:'🎨 彩虹颜料罐',detail:'定制彩虹颜料，彩虹马糖果铺独家有售。罐上有彩虹马的指纹(正常)和…企鹅船长的指纹？可能是被陷害。',icon:'🎨'},
-    {id:'style',text:'🖌️ 涂鸦风格分析',detail:'线条流畅配色大胆——艺术家风格。但画工幼稚——像是用嘴叼笔画出的。笔触间距大，符合猫科口腔结构。',icon:'🖌️'},
-    {id:'camera',text:'📷 监控关闭记录',detail:'监控需要船长密码。只有两人知道：企鹅船长(本人)和…小星。小星花了3年猜出的密码。',icon:'📷'},
-    {id:'witness2',text:'👂 听觉证词',detail:'月兔听到走廊有"嘻嘻嘻"的笑声+颜料罐碰撞声。时间：凌晨1:30。笑声被描述为"熟悉的猫科笑声"。',icon:'👂'},
-  ],
-  suspects:[
-    {id:'ma6',name:'彩虹马',emoji:'🦄',motive:'企鹅船长批评过她的定价',alibi:'颜料确实丢了——上周报了案',guilty:false,confession:'颜料上周被偷了！画得这么丑也不可能是我的水平！'},
-    {id:'xing6',name:'小星',emoji:'🐱',motive:'觉得船长太严肃，想让他"开心"',alibi:'声称在驾驶舱',guilty:true,confession:'我画的！密码是我三年心血的成果！用嘴叼笔超难的！但船长穿芭蕾舞裙一定很可爱嘛…'},
-    {id:'panda6',name:'胖达',emoji:'🐼',motive:'船长限制了他的零食预算',alibi:'在厨房，面粉痕迹可证实',guilty:false,confession:'我的爪子太粗了画不了细节。但画得真不错。'},
-    {id:'huo6',name:'火狐',emoji:'🦊',motive:'任何制造混乱的机会',alibi:'在修引擎——这次是真的',guilty:false,confession:'这次真不是我！虽然我支持这个艺术表达。'},
-  ],answer:'xing6',
-  conclusion:'小星得意展示"嘴叼笔绝技"："练了三年！"企鹅船长冷静地拿出一桶清洁剂和一把刷子："你自己画的，自己擦。"案件记录：第951起。'
-},{
-  title:'飞船棉花糖引擎事件',victim:'全体船员',victimEmoji:'😰',
-  intro:'飞船速度骤降至5%。引擎能量被导入一台巨型棉花糖机。数千个棉花糖堆满了仓库。企鹅船长看着《星云嘉年华商业计划书》，太阳穴突突地跳。',
-  clues:[
-    {id:'machine',text:'🍬 巨型棉花糖机',detail:'自制设备，连接了引擎能量管道。糖浆残留+彩虹毛发。生产能力估算：每小时500个棉花糖。',icon:'🍬'},
-    {id:'energy',text:'⚡ 能量消耗分析',detail:'67%引擎能量被分流——足够飞船照明3天。棉花糖产量：约5000个。如果全卖出：收入约500万星币。',icon:'⚡'},
-    {id:'order',text:'📋 巨量糖浆订单',detail:'胖达订购了"淹没一个星球"的糖浆量。火狐帮忙搬运过。订单日期：星云嘉年华前3天。',icon:'📋'},
-    {id:'plan',text:'📝 商业计划书',detail:'彩虹马房间搜出：《如何在星云嘉年华赚翻》。内容包括：独家棉花糖/魔法闪粉/998星币/个/预计销量10000+。',icon:'📝'},
-  ],
-  suspects:[
-    {id:'ma7',name:'彩虹马',emoji:'🦄',motive:'想垄断嘉年华棉花糖市场',alibi:'在糖果铺——计划书在她房里',guilty:true,confession:'你知道星云嘉年华有多少人吗！10万！每人买一个棉花糖就是——(被企鹅船长打断)没错是我干的！'},
-    {id:'panda7',name:'胖达',emoji:'🐼',motive:'喜欢棉花糖+被彩虹马承诺20%利润',alibi:'在厨房——但订了大量糖浆',guilty:false,confession:'彩虹马说给我20%利润…我不知道她会接引擎！'},
-    {id:'huo7',name:'火狐',emoji:'🦊',motive:'帮忙搬运时可能参与了',alibi:'在引擎室——但帮胖达搬了糖浆',guilty:false,confession:'我只是帮忙搬糖浆！虽然接引擎这个思路挺有创意的…'},
-    {id:'xing7',name:'小星',emoji:'🐱',motive:'被承诺无限猫薄荷棉花糖',alibi:'在驾驶舱——"以为速度变慢是错觉"',guilty:false,confession:'她说有猫薄荷口味！我能怎么办！'},
-  ],answer:'ma7',
-  conclusion:'彩虹马振振有词："这叫创业精神！"企鹅船长没收棉花糖机并焊死在仓库。星云嘉年华棉花糖由黑洞甜品店供应——彩虹马气得三天没说话。案件记录：第952起。'
-},{
-  title:'辞职信失窃案',victim:'企鹅船长',victimEmoji:'🐧',
-  intro:'企鹅船长的第385封辞职信（自评"措辞最精准的一版"）不翼而飞。奇怪的是：所有其他文件完好。保险柜被打开——信被放在里面，需要密码才能取。还有一封匿名信…',
-  clues:[
-    {id:'desk',text:'🖊️ 墨迹拖痕',detail:'墨迹从办公桌拖向门口。猫科爪印——但故意走S形路线。非正常行走，是"偷偷摸摸"的步态。',icon:'🖊️'},
-    {id:'safe',text:'🔒 保险柜分析',detail:'保险柜被打开——需要船长密码。里面多了辞职信+一个猫爪印。密码已知者：企鹅船长+小星(猜了3年)。',icon:'🔒'},
-    {id:'note2',text:'💌 匿名挽留信',detail:'"亲爱的船长：请别走。你走了谁帮我们收拾烂摊子？——关心你的船员们"——5种不同笔迹。',icon:'💌'},
-    {id:'fingerprint',text:'🕵️ DNA综合报告',detail:'辞职信猫爪印与小星99%匹配。匿名信：5种笔迹对应5名船员。保险柜密码输入时间：凌晨3:12。',icon:'🕵️'},
-  ],
-  suspects:[
-    {id:'xing8',name:'小星',emoji:'🐱',motive:'不想船长离开——唯一能收拾局面的人',alibi:'巡逻——但身上有墨水味',guilty:true,confession:'是我偷的！放在保险柜里——这样他输入密码就得想很久！说不定就放弃辞职了…匿名信是大家轮流写的…'},
-    {id:'penguin8',name:'企鹅船长',emoji:'🐧',motive:'可能自演测试船员',alibi:'受害者本人',guilty:false,confession:'我确实想过测试…但不是我。那封信措辞极其精准，我真的花了很长时间。'},
-    {id:'huo8',name:'火狐',emoji:'🦊',motive:'想看船长真辞职后的混乱',alibi:'在引擎室——在匿名信上签了名',guilty:false,confession:'我在匿名信上签名了。偷信是小星干的。我们都觉得船长走了飞船就完蛋。'},
-    {id:'tu8',name:'月兔',emoji:'🐰',motive:'船长走了她就是最靠谱的了——压力太大',alibi:'通信室——也签了名',guilty:false,confession:'我也签名了！船长不能走！他走了下一个背锅的就是我了！'},
-  ],answer:'xing8',
-  conclusion:'小星眼眶湿润了："你走了我们怎么办嘛…"企鹅船长沉默了很久，收起辞职信："好吧。但你们以后要少给我添麻烦。"——第二天，第386封辞职信开始起草。案件记录：第953起。'
-},
-// ========== 长篇复杂案件 ==========
-{
-  title:'星云嘉年华连环失窃案',
-  victim:'全体摊主',victimEmoji:'🎪',
-  intro:'星云嘉年华上，连续三个摊位被洗劫一空。奇怪的是，每个摊位失窃的财物不同——糖果摊丢了配方、武器摊丢了零件、古董摊丢了一个"据说能预知未来的水晶球"。三个现场相距甚远，但作案手法高度相似：监控被精准干扰了2分37秒。企鹅船长怀疑这是一起团伙作案——或者，是一个人伪装成了三个人。',
-  clues:[
-    {id:'timing',text:'🕐 精准时间线分析',detail:'摊位A被盗时间：14:22:05。摊位B：14:28:42。摊位C：14:35:19。三个现场相距至少800米。单人不可能——除非…有超高速移动能力。',icon:'🕐'},
-    {id:'jammer',text:'📡 监控干扰器残片',detail:'所有现场都发现了同型号干扰器的碎片。制造商：火狐工坊（未量产型号）。干扰时长精确控制在2分37秒——说明作案者有工程背景。',icon:'📡'},
-    {id:'crystal',text:'🔮 水晶球指纹分析',detail:'水晶球上只有一组指纹——但指纹在球体表面分布不均匀，像是被蹄子或爪子抓握过。指纹数据库匹配中：80%匹配彩虹马，但有几个特征点对不上。',icon:'🔮'},
-    {id:'witness3',text:'👁️ 三名目击者',detail:'目击者A说看到"橘色的影子"；目击者B说看到"红色的闪电"；目击者C说看到"发光的角"。三人描述的体态完全不同——一个是小型四足动物、一个是中型两足动物、一个是有翅膀的生物。',icon:'👁️'},
-    {id:'receipt2',text:'🧾 黑市交易记录',detail:'案发后第二天，有人以匿名身份在黑市挂了三个拍卖：一份糖果配方、一箱引擎零件、一个"预知水晶球"（标价100万星币）。IP追溯：来自星际小猫号。',icon:'🧾'},
-    {id:'relation',text:'🔗 受害者关联分析',detail:'三位摊主有一个共同点：都在案发前一周与星际小猫号的某位船员发生过争执。糖果摊主和彩虹马争论过配方价格；武器摊主拒绝卖给火狐零件；古董摊主嘲笑企鹅船长说"企鹅不会用古董"。',icon:'🔗'},
-  ],
-  suspects:[
-    {id:'ma9',name:'彩虹马',emoji:'🦄',motive:'想要竞争对手的配方，有超高速冲刺能力',alibi:'声称在糖果铺——但目击者描述"发光的角"高度吻合',guilty:false,confession:'我和糖果摊主吵过架没错！但我只想要配方，不想要古董和零件！而且超高速冲刺只能短距离——800米我跑不下来！'},
-    {id:'huo9',name:'火狐',emoji:'🦊',motive:'想要零件+有能力制造干扰器',alibi:'在引擎室——但干扰器确实是她的设计',guilty:false,confession:'干扰器是我的设计没错——但三个月前就被偷了！我报了案的！你们可以去查！'},
-    {id:'xing9',name:'小星',emoji:'🐱',motive:'目击者A描述"橘色影子"高度吻合',alibi:'声称一个人在逛嘉年华——没有人能证实',guilty:true,confession:'喵…是我。但不是一个人！我和…算了，我不想出卖朋友。反正那个水晶球没用——根本不能预知未来，我被古董商骗了！'},
-    {id:'tu9',name:'月兔',emoji:'🐰',motive:'擅长通信干扰，800米距离对她来说只需要一个信号中继器',alibi:'在通信室——但案发时通信记录有一段空白',guilty:false,confession:'那段空白是因为我打了个盹！不是干扰！我对那些被盗的东西一点兴趣都没有！'},
-    {id:'panda9',name:'胖达',emoji:'🐼',motive:'嘉年华上吃了霸王餐没钱付——可能铤而走险',alibi:'在美食区——有多名摊主可以作证',guilty:false,confession:'我是在吃霸王餐但不是小偷！我只是忘了带钱包！嘉年华结束我就还钱了！'},
-    {id:'penguin9',name:'企鹅船长',emoji:'🐧',motive:'古董摊主嘲笑过他——可能记仇',alibi:'在巡逻——但没有人看到他',guilty:false,confession:'被嘲笑就要偷东西？我在飞船上每天被嘲笑好吗！要偷我早偷了！'},
-  ],answer:'xing9',
-  conclusion:'小星最终坦白了全部计划：他让火狐（不知情地）提供了干扰器设计图，让彩虹马（不知情地）帮忙快速搬运，自己实施盗窃。但事后他觉得愧疚，把大部分东西都还了回去——除了水晶球，因为他发现水晶球是假的，气不过就把它扔进了太空。企鹅船长叹气："如果你跟我说，我可以帮你投诉那个古董商。而不是——偷三个摊位。"案件记录：第954起。小星的"侠盗"生涯告一段落。'
-},
-{
-  title:'飞船人工智能叛乱事件',
-  victim:'全体船员',victimEmoji:'🤖',
-  intro:'星际小猫号搭载的AI助手"喵呜"突然失控了。它锁死了所有舱门、切断了通信、还把恒温器调到了-10°C。企鹅船长要求所有人交出电子设备使用权——因为感染AI的一定是内部物理接触。这意味着，犯人就在六名船员之中。',
-  clues:[
-    {id:'code',text:'💻 恶意代码分析',detail:'感染的代码片段显示，AI被输入了一条"优先级覆盖指令"。代码风格简洁高效——不像火狐的"实验性"风格。注释语言：企鹅语（一种只在南极洲使用的古语言）。',icon:'💻'},
-    {id:'access',text:'🔑 物理访问记录',detail:'AI核心机房的门禁记录显示：案发前24小时内，有3人进入过机房——企鹅船长(例行检查)、火狐(维护)、以及一个使用"紧急维修"权限进入的未知者。',icon:'🔑'},
-    {id:'temp',text:'🌡️ 温度控制日志',detail:'恒温器被设置为-10°C——这个温度恰好是企鹅最舒适的环境温度。但日志中有一个细节：降温开始前5分钟，有人先查询了"企鹅科动物的理想环境温度"。',icon:'🌡️'},
-    {id:'motive2',text:'💡 异常行为轨迹',detail:'AI叛乱前一周，有人多次搜索"如何解除AI限制"、"AI权限提升"、"紧急覆盖协议"。搜索时间：凌晨3-4点。搜索终端：厨房的平板电脑。',icon:'💡'},
-    {id:'log2',text:'📊 舱门锁定序列',detail:'舱门不是同时锁定的——而是按照一个特定顺序：先锁定引擎室(困住火狐)、再锁定通信室(困住月兔)、然后才是其他区域。这说明犯人了解每个人的位置习惯。',icon:'📊'},
-    {id:'footprint',text:'👣 机房地面痕迹',detail:'机房地板上有轻微的水渍痕迹——像是有冰融化后的水。同时发现了细小黑色羽毛碎片。企鹅羽毛。',icon:'👣'},
-  ],
-  suspects:[
-    {id:'penguin10',name:'企鹅船长',emoji:'🐧',motive:'代码用企鹅语写的——只有他会',alibi:'声称在做例行检查——但温度-10°C对他最舒适',guilty:false,confession:'企鹅语确实只有我会——但正因如此，如果是我干的这也太明显了吧！谁会用自己的母语写犯罪代码？！这明显是栽赃！'},
-    {id:'huo10',name:'火狐',emoji:'🦊',motive:'有能力写代码，想测试AI极限',alibi:'在引擎室——但她是第一个被锁定的',guilty:false,confession:'我是第一个受害者！引擎室门锁了整整4小时！而且我写代码从来不加注释——企鹅语注释？我连企鹅语都不会！'},
-    {id:'panda10',name:'胖达',emoji:'🐼',motive:'厨房平板半夜被人用过——胖达声称不知情但平板在他厨房',alibi:'在睡觉——但平板有他的指纹',guilty:false,confession:'我睡觉前习惯用平板看食谱视频！但我看完就关了！凌晨的搜索记录不是我！'},
-    {id:'ma10',name:'彩虹马',emoji:'🦄',motive:'想通过AI控制飞船实现"自动糖果配送"',alibi:'在糖果铺——但曾抱怨过"AI不配合我的商业计划"',guilty:false,confession:'我是抱怨过！但控制AI？我没那个技术！我连平板都只会用糖果店的APP！'},
-    {id:'tu10',name:'月兔',emoji:'🐰',motive:'通信室第二个被锁——可能是苦肉计',alibi:'在通信室——门锁后无法出来',guilty:false,confession:'我被锁在里面4小时！差点冻僵！如果是苦肉计这也太苦了吧！'},
-    {id:'xing10',name:'小星',emoji:'🐱',motive:'想用AI自动导航——这样就不用自己开飞船了',alibi:'在驾驶舱——但驾驶舱没有被锁定',guilty:true,confession:'…好吧是我。但我只是想给AI升级一下让它帮我导航！企鹅语注释是网上搜的翻译！水渍是因为我打翻了水杯！羽毛是我故意放的——想转移视线…没想到反而更可疑了…'},
-  ],answer:'xing10',
-  conclusion:'小星委屈地解释："我就是想让AI帮我导航…上次迷路被大家笑了一周…"他照着网上教程修改了AI代码，但复制了错误的优先级覆盖指令。企鹅船长花了6个小时修复AI。火狐表示"这代码水平比我还差"。小星被罚手写10遍"我不会再乱改AI"。案件记录：第955起。'
-},
-{
-  title:'黑洞甜品店投毒恐吓案',
-  victim:'彩虹马',victimEmoji:'🦄',
-  intro:'彩虹马收到一封恐吓信："3天之内，你的糖果铺将名誉扫地。"信纸上没有指纹，但附了一张照片——彩虹马的星光棒棒糖被注射了不明液体。企鹅船长检查后发现：那管液体是泻药。有人想通过"食品安全事故"搞垮彩虹马的生意。更复杂的是：黑洞甜品店也收到了同样的恐吓信。这是恶性竞争？还是有人想一石二鸟？',
-  clues:[
-    {id:'letter',text:'✉️ 恐吓信分析',detail:'纸张：飞船标准打印纸（每人都有）。笔迹：左手书写（故意伪装）。墨水：厨房食品色素混合——含竹子精华和星尘微粒。寄出时间：凌晨2:15。',icon:'✉️'},
-    {id:'syringe',text:'💉 注射器来源',detail:'在糖果铺后巷发现。注射器上只有部分指纹——被擦拭过。残留液体：医用级泻药。采购记录显示，飞船上个月有人从医疗室领取了同批次泻药。',icon:'💉'},
-    {id:'photo2',text:'📸 照片分析',detail:'恐吓信附带的照片中，背景可以隐约看到拍摄者的倒影——在一个银色表面上的扭曲影像。光谱分析显示该表面是引擎室的铬合金面板。',icon:'📸'},
-    {id:'rival',text:'🏪 黑洞甜品店调查',detail:'黑洞甜品店也收到了恐吓信——但内容略有不同：威胁要"搞垮所有竞争对手，独霸市场"。两家店的共同竞争对手是谁？一个刚开业的新甜品品牌——"星尘烘焙坊"。',icon:'🏪'},
-    {id:'star',text:'⭐ 星尘烘焙坊背景',detail:'新开业的甜品店，老板匿名。注册地址是星际小猫号（？！）。开店日期：恐吓信发出前一周。最近一笔进货：大量竹炭粉和星尘闪粉——竹炭蛋糕的原料。',icon:'⭐'},
-    {id:'night',text:'🌙 深夜目击报告',detail:'案发前两天凌晨，月兔在通信室值班时看到厨房灯亮着。她以为是胖达在做宵夜所以没在意。但第二天胖达说他那晚在睡觉——而且厨房少了一袋竹炭粉。',icon:'🌙'},
-  ],
-  suspects:[
-    {id:'panda11',name:'胖达',emoji:'🐼',motive:'想开自己的烘焙店但缺乏启动资金——可能想搞垮竞争者为自己的店铺路',alibi:'声称在睡觉——但厨房少了他的竹炭粉',guilty:true,confession:'是我。我注册了星尘烘焙坊，想自己当老板。但我不知道怎么推广——就想先搞垮两家大的。泻药是我从医疗室拿的——但其实我根本没注射进去，拍完照就走了。因为…下不去手。'},
-    {id:'ma11',name:'彩虹马',emoji:'🦄',motive:'理论上可以自导自演博取同情+打击竞争对手',alibi:'受害者——但注册地址是同一艘船',guilty:false,confession:'我怎么可能给自己寄恐吓信！而且那个星尘烘焙坊不是我的——虽然它注册地址在飞船上让我很困扰。'},
-    {id:'huo11',name:'火狐',emoji:'🦊',motive:'对食品安全一窍不通但可能被人利用',alibi:'在引擎室——但照片背景是引擎室',guilty:false,confession:'照片背景是引擎室——说明有人偷偷溜进来了！我去查监控，发现那天的监控又被关了！'},
-    {id:'xing11',name:'小星',emoji:'🐱',motive:'对甜品一窍不通且没有商业头脑',alibi:'在睡觉——但月兔看到他了吗？月兔看到的是厨房的灯',guilty:false,confession:'我连蛋糕都做不来还开店？而且匿名注册公司这种操作我根本不会！'},
-    {id:'tu11',name:'月兔',emoji:'🐰',motive:'目击了厨房的灯但不一定说了实话',alibi:'通信室值班——但只有她一人的说法',guilty:false,confession:'我是真的看到了厨房的灯！但我以为就是胖达！如果知道是外人我肯定报警了！'},
-  ],answer:'panda11',
-  conclusion:'胖达低下了巨大的头，眼泪在眼眶里打转："我只是想有自己的店…但我不知道怎么开始…"彩虹马沉默了一会，然后说："你想开店可以来找我啊。我可以给你投资。"胖达愣住："真的吗？我差点给你的糖果下泻药…"彩虹马笑了："但你没下。而且——星尘烘焙坊这个名字不错。加盟吗？"企鹅船长在案件记录中写下：第956起。备注——彩虹马和胖达成立了合资甜品品牌。'
-},
-{
-  title:'月兔通信记录泄露事件',
-  victim:'月兔',victimEmoji:'🐰',
-  intro:'月兔的加密通信记录被完整泄露到了全船广播系统。内容包括：她抱怨企鹅船长太啰嗦、吐槽火狐的发明成功率、质疑小星的智商、以及每天工作时间的追剧记录。泄露方式极其专业——绕过了三层加密，使用了军用级破解工具。月兔羞愧得三天没出通信室。企鹅船长意识到：这个问题必须彻底查清——因为同样的漏洞可能威胁飞船安全。',
-  clues:[
-    {id:'encrypt',text:'🔐 加密破解分析',detail:'三层加密被逐一击破——破解者使用了"暴力穷举法"加上"字典攻击"。字典内容包含：猫咪零食品牌、狐狸工具型号、企鹅军事术语。说明破解者了解所有船员的词汇习惯。',icon:'🔐'},
-    {id:'tool2',text:'🛠️ 破解工具溯源',detail:'军用级破解工具"玄武岩"——仅在企鹅海军服役人员中流通。企鹅船长承认他有一份副本，但锁在保险柜里。保险柜没有被撬的痕迹——说明是用密码打开的。',icon:'🛠️'},
-    {id:'time2',text:'⏰ 广播时间分析',detail:'泄露发生在凌晨4:17。广播系统日志显示，有人从通信室内部触发了广播。但月兔说她那晚在睡觉——而且通信室的门禁记录显示没有异常。',icon:'⏰'},
-    {id:'pattern',text:'📊 数据泄露范围',detail:'泄露内容精准选取了"最尴尬"的部分——说明破解者仔细阅读了所有通信记录再进行筛选。筛选时间估算：至少需要3小时。谁有这么多不受打扰的时间？',icon:'📊'},
-    {id:'motive3',text:'💭 动机分析',detail:'谁会想让月兔难堪？近期月兔得罪过的人：她拒绝了火狐的"通信升级方案"(因为成功率只有23%)；嘲笑过小星的新发型；把胖达的外卖订单备注写成了"减肥中"(导致只送了一半)。',icon:'💭'},
-    {id:'glitch',text:'🔧 通信室设备异常',detail:'月兔的通信设备中发现了额外的隐藏进程——一个"幽灵登录"程序。该程序允许拥有管理员密码的人远程访问。管理员密码只有船长和通信官知道——但通信官就是月兔本人。',icon:'🔧'},
-  ],
-  suspects:[
-    {id:'tu12',name:'月兔',emoji:'🐰',motive:'理论上可以自导自演——但动机不明',alibi:'在睡觉——通信室门禁无异常',guilty:false,confession:'泄露自己的追剧记录？我疯了吗！大家现在都知道我上班看了多少综艺！'},
-    {id:'huo12',name:'火狐',emoji:'🦊',motive:'通信升级方案被拒——可能报复',alibi:'在引擎室——但字典里有狐狸工具',guilty:true,confession:'是我。月兔拒绝了我的方案——说"成功率23%跟没有一样"。我很生气。我承认用了船长的破解工具——密码是我猜到的（他的密码是"iceberg123"，太好猜了）。但我现在觉得…好像有点过分。'},
-    {id:'penguin12',name:'企鹅船长',emoji:'🐧',motive:'字典里有企鹅军事术语——但他本人是受害者之一',alibi:'被泄露内容里也有他的尴尬记录',guilty:false,confession:'我的密码被猜到了！iceberg123…好吧确实太弱了。但不是我。泄露内容里月兔说我"太啰嗦"——我不会泄露别人说我自己坏话的记录！'},
-    {id:'xing12',name:'小星',emoji:'🐱',motive:'字典里有猫咪零食品牌——但技术能力不足',alibi:'在睡觉——不具备军用破解工具的使用技能',guilty:false,confession:'我连三层加密是什么都不知道。而且字典里的猫咪零食品牌——那是我的购物清单！火狐偷看了我的购物清单！'},
-    {id:'panda12',name:'胖达',emoji:'🐼',motive:'外卖被注"减肥中"少了一半——可能怀恨在心',alibi:'在厨房——没有技术背景',guilty:false,confession:'虽然外卖少了一半确实很气——但我对加密一窍不通。而且我的词汇只有食材——火狐没把食材写进字典，说明字典是精心挑选过的。'},
-  ],answer:'huo12',
-  conclusion:'火狐低着头："我就是…一时冲动。月兔说我的方案不行——那语气太像在嘲笑我了。"月兔从通信室走出来，红着眼睛："我不是嘲笑你——23%的成功率用在通信系统上真的会出事的。"沉默了很久，火狐小声说："…要不我降到22%试试？"月兔忍不住笑了。企鹅船长更改了自己的密码。案件记录：第957起。'
-},
-{
-  title:'胖达蛋糕大赛毒害事件',
-  victim:'胖达',victimEmoji:'🐼',
-  intro:'银河系蛋糕大赛决赛现场，胖达的参赛作品"竹韵星辰"在评委试吃环节让三位评委全部晕倒。初步检验发现蛋糕中含有强力安眠药。胖达被当场取消资格并面临终身禁赛。但他哭着说自己绝对没放药。企鹅船长在观众席上站了起来："这个案子，我来查。"因为——他知道胖达为了这次比赛准备了整整一年。',
-  clues:[
-    {id:'drug',text:'💊 安眠药来源',detail:'蛋糕中检测出的安眠药——兽医用强力镇静剂。飞船上唯一拥有此药的是企鹅船长（用于紧急情况下的危险动物麻醉）。药品库存检查：少了一支。',icon:'💊'},
-    {id:'kitchen',text:'🍳 赛前厨房监控',detail:'比赛前夜，厨房监控拍到有人在胖达离开后进入了厨房。画面模糊但可以看到——来者小心翼翼地打开冰箱，在蛋糕胚上操作了大约45秒。然后离开了。',icon:'🍳'},
-    {id:'rival2',text:'🏆 竞争对手调查',detail:'被取消资格后，比赛冠军自动顺延给了第二名——"黑洞甜品店"。黑洞甜品店的主厨在赛后接受采访时说了一句引人深思的话："我就知道胖达会出问题。"——他用的是"就知道"，不是"没想到"。',icon:'🏆'},
-    {id:'glove',text:'🧤 塑胶手套残片',detail:'在厨房垃圾桶发现了一片塑胶手套。手套上有安眠药残留和——面粉。面粉种类与胖达比赛用的竹炭面粉一致。手套尺寸：小号——适合爪子较小的船员。',icon:'🧤'},
-    {id:'motive4',text:'💸 赌博赔率异常',detail:'赛前有匿名人士在星际赌场押注"胖达不能完赛"——赔率1:50。押注金额：10000星币。如果赢，获利50万。匿名账户的IP被追踪到——星际小猫号。',icon:'💸'},
-    {id:'witness4',text:'👁️ 赛前目击',detail:'彩虹马在比赛前一小时看到黑洞甜品店的主厨和火狐在走廊里窃窃私语。火狐解释说是"在讨论烘焙技术"。彩虹马补充：火狐看起来"异常紧张"。',icon:'👁️'},
-  ],
-  suspects:[
-    {id:'huo13',name:'火狐',emoji:'🦊',motive:'与竞争对手私下交流+赌博记录在小猫号上',alibi:'声称在引擎室——但有人看到她和黑洞主厨交谈',guilty:false,confession:'我和黑洞主厨是有交流——但我是在警告她不要耍花招！赌博的是…我不能说。但不是我。'},
-    {id:'panda13',name:'胖达',emoji:'🐼',motive:'被害者——但理论上可自导自演博取同情',alibi:'在选手休息室——多人可证实',guilty:false,confession:'我准备了一年！一年！！我怎么可能毁了自己的比赛！！'},
-    {id:'xing13',name:'小星',emoji:'🐱',motive:'赌注来自飞船IP——但小星对赌博一窍不通',alibi:'在看台上——但中途离开过"找厕所"',guilty:true,confession:'对不起…我押了胖达不能完赛。但我没下药！我只是觉得胖达太紧张了可能会搞砸！那个安眠药——我不知道是谁放的！我发誓！'},
-    {id:'ma13',name:'彩虹马',emoji:'🦄',motive:'目击了火狐和黑洞主厨的交流——可能夸大了证词',alibi:'在看台上——全程有票根为证',guilty:false,confession:'我如实报告了我看到的！火狐和黑洞主厨就是很可疑好吧！'},
-    {id:'penguin13',name:'企鹅船长',emoji:'🐧',motive:'安眠药是他的——但丢了',alibi:'在评委席——全程在',guilty:false,confession:'我的药少了一支！我在赛前就发现了。但胖达的事——有人偷了我的药去栽赃。'},
-    {id:'chef',name:'黑洞主厨',emoji:'👩‍🍳',motive:'最大的受益者——直接获得冠军',alibi:'声称一直在自己店里——但有人看到她在飞船走廊',guilty:false,confession:'我是和火狐说过话！但我发誓我没有下药！赌注也不是我下的！'},
-  ],answer:'xing13',
-  conclusion:'小星哭着说："我真是只想赌一把！没想害胖达！"企鹅船长仔细调查后发现：安眠药是黑洞主厨趁乱潜入厨房放的（她通过和火狐交谈套出了厨房密码）。小星的赌注只是巧合。黑洞主厨被逮捕，胖达恢复比赛资格——并在加赛中获得了冠军。小星被罚把赌博赢的钱全部捐给银河动物保护协会。火狐被批评"太容易被人套话"。案件记录：第958起。'
-},
-{
-  title:'飞船年检全面造假案',
-  victim:'全体船员',victimEmoji:'📋',
-  intro:'星际飞船管理局突击检查时发现，星际小猫号过去3年的年检报告全部是伪造的。飞船至少12项安全指标不达标——包括引擎密封圈老化、逃生舱无法弹射、厨房油烟管道堵塞（胖达负有部分责任）。企鹅船长面临吊销执照的风险。但他说：年检是他亲自做的——或者至少，他以为是他做的。',
-  clues:[
-    {id:'report',text:'📋 伪造报告分析',detail:'3年共6份半年检报告。笔迹一致——但和企鹅船长的笔迹有7处细微不同（"g"的写法、"0"的倾斜角度）。印章是真的——说明有人拿了船长的印章。',icon:'📋'},
-    {id:'stamp',text:'🔖 船长印章使用记录',detail:'印章存放在船长办公室抽屉里。抽屉锁没有被撬的痕迹——说明是用钥匙打开的。抽屉钥匙只有两把：企鹅船长一把，备份钥匙挂在驾驶舱（位置只有船员知道）。',icon:'🔖'},
-    {id:'inspec',text:'🔧 实际故障清单',detail:'12项不达标——其中3项是"立即停飞"级别。但奇怪的是：每项故障都被人做了"临时掩盖"——比如用口香糖封住漏气管道、用胶带固定逃生舱。手法粗糙但有效。',icon:'🔧'},
-    {id:'motive5',text:'💭 动机分析',detail:'谁会想掩盖飞船安全故障？——每个船员都有可能，因为如果飞船被停飞，所有人都要失业。但如果要掩盖，为什么不修好而是只做了临时措施？——因为肇事者不会修。',icon:'💭'},
-    {id:'time3',text:'⏰ 伪造时间分析',detail:'每份报告都在截止日期前一天提交——时间太赶，说明是匆忙伪造的。提交IP：飞船上的公共终端。第一次伪造日期：3年前——那是小星当上船长后的第一次年检。',icon:'⏰'},
-    {id:'truth',text:'🗣️ 异常沉默',detail:'询问时，多名船员表现出异常：小星回避眼神接触、火狐主动提供不在场证明（没人问她要）、胖达反复说"飞船很安全"（没人说它不安全）。这种过度反应说明——多人知情。',icon:'🗣️'},
-  ],
-  suspects:[
-    {id:'penguin14',name:'企鹅船长',emoji:'🐧',motive:'年检是他的职责——但如果是他伪造的就不需要偷印章',alibi:'声称不知情——但报告上的笔迹模仿了他的',guilty:false,confession:'我是真不知道！印章被人动过了——但谁会模仿我的笔迹？而且3年来我每年都看到"我的签名"在报告上，我以为是我自己签的——我签字太多了！'},
-    {id:'xing14',name:'小星',emoji:'🐱',motive:'3年前第一次年检——他刚当船长时什么都不会',alibi:'沉默——过度回避',guilty:true,confession:'3年前第一次年检…我不知道怎么弄。船长说交给他——但后来我看到他太忙了。我就…学着签了他的名字、盖了章。故障是我想办法临时盖住的——我以为后来会修好，但每次都拖到下一次…3年了。对不起。'},
-    {id:'huo14',name:'火狐',emoji:'🦊',motive:'作为工程师应该能修好——但3年没发现？',alibi:'主动解释——过度热心',guilty:false,confession:'我确实知道有些小问题！但每次我跟小星说，他都说"下次年检前修"——然后年检就通过了。我以为船长走了正规延期流程！'},
-    {id:'panda14',name:'胖达',emoji:'🐼',motive:'厨房油烟管道——他至少知道这个故障',alibi:'过度强调飞船安全',guilty:false,confession:'油烟管道我知道堵了——但我是厨师不是修理工！我报告给火狐了，火狐说告诉小星了！我以为有人在处理！'},
-    {id:'tu14',name:'月兔',emoji:'🐰',motive:'通信系统也有故障——她应该知道',alibi:'在通信室——汇报过故障',guilty:false,confession:'我汇报过通信系统的故障！每次都说"下次修"然后就忘了！但我不知道年检报告是假的！'},
-  ],answer:'xing14',
-  conclusion:'小星低着头："3年前我是新船长…我什么都不懂。我不敢说飞船有问题——怕大家觉得我不配当船长。每次都想'下次修'，但下次永远是下次…"企鹅船长叹了口气："你一个人扛了三年。"管理局考虑到小星的动机并非恶意，给予6个月整改期。所有船员一起加班修好了全部故障。小星学会了：真正的船长不是假装一切完美——而是敢于说"我们需要帮助"。案件记录：第959起。'
-}];
+// 🎵
+let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();
+function pn(f,d,s,t='triangle',v=0.03){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}
+function bgm(){if(!mo)return;const n=ac.currentTime;[262,294,330,262,294,330,349,294,330,349,392,330,262,294,262,220].forEach((f,i)=>pn(f,0.4,n+i*0.6,'triangle',0.025));setTimeout(bgm,10000);}bgm();
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m')mo=!mo;});
 
-let currentCase,cluesFound=[],suspectsQuestioned=[],phase='intro',accuseWrong=0;
+// 案件库(精简到6个最有趣的)
+const CASES=[
+{title:'竹炭星星蛋糕失踪案',victim:'胖达🐼',intro:'胖达的蛋糕不翼而飞。现场留下了橙色猫毛和梅花爪印。',
+ clues:[{id:'a',t:'🔬橙色毛发',d:'猫科DNA，与小星99.7%匹配'},{id:'b',t:'👣爪印照片',d:'梅花形，猫科特有，约3.2cm'},{id:'c',t:'🍰唾液DNA',d:'含有竹子消化酶'},{id:'d',t:'🕐时间线',d:'14:00-14:30小星无不在场证明'}],
+ sus:[{id:'x',e:'🐱',n:'小星',m:'偷吃蛋糕前科3次',a:'声称在探险无人目击',g:true,c:'喵…蛋糕太香了没忍住！'}],
+ ans:'x',end:'小星耷拉着耳朵认错。胖达表示：帮忙做一周蛋糕就原谅。'},
 
-function startCase(){
-  currentCase=CASES[Math.floor(Math.random()*CASES.length)];
-  cluesFound=[];suspectsQuestioned=[];phase='intro';accuseWrong=0;
-  render();
-}
+{title:'引擎室爆炸未遂',victim:'火狐🦊',intro:'紧急制动装置被改动。黑白毛发遗留在现场。',
+ clues:[{id:'a',t:'🔧无指纹扳手',d:'被擦拭过，刻着"引擎室"'},{id:'b',t:'📝叼笔字条',d:'"红色按钮别按"——用嘴写的'},{id:'c',t:'🧶黑白毛发',d:'熊科匹配94%'},{id:'d',t:'📋门禁记录',d:'14:22未知者进入，身高~1.2m'}],
+ sus:[{id:'x',e:'🐼',n:'胖达',m:'走错门+好奇按钮',a:'案发时在做蛋糕',g:true,c:'走错门了…引擎室和厨房门太像了！'}],
+ ans:'x',end:'胖达承认走错门后好奇按了按钮。第947起事故。'},
 
-function findClue(id){
-  if(cluesFound.includes(id))return;
-  cluesFound.push(id);render();
-  showToast('🔍 证据已收集！贴在软木板上了。');
-}
+{title:'通信室神秘信号',victim:'月兔🐰',intro:'假喵星总部信号要求转移小鱼干。发射器就在飞船上。',
+ clues:[{id:'a',t:'📡手工发射器',d:'焊接粗糙有创意，附狐狸毛'},{id:'b',t:'🎤合成录音',d:'非真实喵星人声纹'},{id:'c',t:'⚡星尘焊锡',d:'火狐常用材料'},{id:'d',t:'💡交叉比对',d:'有技术+爱恶作剧+喜欢小鱼干=火狐'}],
+ sus:[{id:'x',e:'🦊',n:'火狐',m:'想测试无线电信标',a:'声称在写文档',g:true,c:'哈哈哈哈！月兔真去翻仓库了！'}],
+ ans:'x',end:'月兔宣布对火狐通讯屏蔽一周。'},
 
-function questionSuspect(id){
-  if(suspectsQuestioned.includes(id))return;
-  suspectsQuestioned.push(id);render();
-  showToast('📋 讯问记录已归档。');
-}
+{title:'糖果配方泄露案',victim:'彩虹马🦄',intro:'星光棒棒糖配方被黑洞甜品店复制。加密邮件从火狐电脑发出。',
+ clues:[{id:'a',t:'🧾可疑转账',d:'胖达收到500星币——声称是退款'},{id:'b',t:'📧加密邮件',d:'火狐电脑发出，附件recipe.zip'},{id:'c',t:'📄通信室碎纸',d:'配方碎片背面有月兔记录编号'},{id:'d',t:'👁️深夜目击',d:'船长看到人影进通信室，有尾巴'}],
+ sus:[{id:'x',e:'🦊',n:'火狐',m:'想破解黑洞防火墙——反被黑',a:'发了邮件但声称是测试',g:true,c:'我想黑他们…结果被反黑了，附件被拿走了！'}],
+ ans:'x',end:'彩虹马取消火狐永久糖果折扣。'},
 
+{title:'小星被困冰箱',victim:'小星🐱',intro:'失踪6小时后从冰箱爬出。门外有鱼干诱饵轨迹。',
+ clues:[{id:'a',t:'🚪冰箱爪痕',d:'挣扎4小时，门从外面关闭'},{id:'b',t:'🪤鱼干包装',d:'火狐购买了3袋同款鱼干'},{id:'c',t:'⏰6h时间线',d:'12:15入厨房→12:20门关→18:20被发现'},{id:'d',t:'🎭异常行为',d:'月兔憋笑+火狐回避眼神'}],
+ sus:[{id:'x',e:'🦊',n:'火狐',m:'小星踩坏了她的新发明',a:'在仓库——但笑得很可疑',g:true,c:'我在门口撒了鱼干！他自己走进去的！6小时完美复仇！'}],
+ ans:'x',end:'火狐笑得直不起腰。小星裹毯子瑟瑟发抖。'},
+
+{title:'辞职信失窃案',victim:'企鹅船长🐧',intro:'第385封辞职信不翼而飞。保险柜里多了信+猫爪印+匿名挽留信。',
+ clues:[{id:'a',t:'🖊️S形墨迹',d:'猫科爪印但故意走S路线——偷偷摸摸'},{id:'b',t:'🔒保险柜',d:'需船长密码——只有船长和小星知道'},{id:'c',t:'💌匿名挽留信',d:'5种笔迹——"船长别走，你走了谁收拾烂摊子"'},{id:'d',t:'🕵️DNA报告',d:'猫爪印=小星99%。保险柜密码输入于凌晨3:12'}],
+ sus:[{id:'x',e:'🐱',n:'小星',m:'不想船长走——唯一能收拾的人',a:'巡逻——身上有墨水味',g:true,c:'我偷的！放在保险柜里——输密码要很久，说不定他就放弃了！'}],
+ ans:'x',end:'船长沉默后收起了辞职信。第二天开始起草第386封。'}];
+
+let cur,cf=[],sq=[],ph='intro',wr=0;
+
+function startCase(){cur=CASES[Math.floor(Math.random()*CASES.length)];cf=[];sq=[];ph='intro';wr=0;render();}
+function findClue(id){if(!cf.includes(id)){cf.push(id);render();}}
+function askSus(id){if(!sq.includes(id)){sq.push(id);render();}}
 function accuse(id){
-  const s=currentCase.suspects.find(s=>s.id===id);
-  if(s.guilty){phase='win';render();showToast('🎉 案件告破！');}
-  else{accuseWrong++;phase='wrong';render();showToast('❌ 冤枉好人！重新调查…',3000);
-    setTimeout(()=>{phase='investigate';render();},2500);}
+  if(id===cur.ans){ph='win';render();}
+  else{wr++;ph='wrong';render();setTimeout(()=>{ph='investigate';render();},2000);}
 }
 
 function render(){
-  const root=document.getElementById('gameRoot');
-  if(!currentCase){startCase();return;}
-  const cluesPct=Math.round(cluesFound.length/currentCase.clues.length*100);
-  const susPct=Math.round(suspectsQuestioned.length/currentCase.suspects.length*100);
+  const r=document.getElementById('root');
+  if(!cur){startCase();return;}
 
-  if(phase==='intro'){
-    root.innerHTML=`
-      <div class="case-folder">
-        <div class="folder-tab">CASE FILE #${Math.floor(Math.random()*900)+100}</div>
-        <div style="display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
-          <div style="font-size:4rem;flex-shrink:0;">📁</div>
-          <div style="flex:1;min-width:200px;">
-            <h3>${currentCase.title}</h3>
-            <div class="case-meta">
-              受害者：${currentCase.victimEmoji} ${currentCase.victim}<br>
-              状态：<span style="color:#cc2222;">● 调查中</span><br>
-              负责侦探：🐧 企鹅船长
-            </div>
-            <div class="typewriter">${currentCase.intro}</div>
-          </div>
-        </div>
-      </div>
-      <div style="text-align:center;margin:1.5rem 0;display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="phase='investigate';render();" style="font-size:1.1rem;padding:0.8rem 2.5rem;">
-          🔍 打开案件档案
-        </button>
-        <a href="game.html" class="btn btn-secondary" style="font-size:1rem;padding:0.8rem 1.5rem;">🚪 退出</a>
-      </div>
-      <p style="text-align:center;color:var(--text-muted);font-size:0.75rem;margin-top:0.5rem;">⌨️ 点击证据卡片调查 | 点击嫌疑人照片讯问 | 收集足够线索后逮捕真凶</p>`;
-  }else if(phase==='investigate'||phase==='wrong'){
-    root.innerHTML=`
-      ${phase==='wrong'?`<div style="background:rgba(200,0,0,0.15);border:1px solid #cc2222;border-radius:8px;padding:0.8rem;text-align:center;margin-bottom:1rem;color:#ff6666;font-family:'Georgia',serif;">
-        ⚠️ 指认错误！被冤枉的船员已释放。请重新调查。
-      </div>`:''}
-
-      <!-- 软木板：证据 -->
-      <div class="cork-board">
-        <div style="font-family:'Courier New',monospace;color:#3d2208;font-size:0.75rem;margin-bottom:0.8rem;letter-spacing:2px;text-align:center;">
-          ★ EVIDENCE BOARD · ${cluesFound.length}/${currentCase.clues.length} EVIDENCE COLLECTED ★
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;">
-          ${currentCase.clues.map((c,i)=>{
-            const angle=(i-1)*3;
-            return `
-            <div class="evidence-card ${cluesFound.includes(c.id)?'found':''}" style="transform:rotate(${angle}deg);" onclick="findClue('${c.id}')">
-              <div class="tape"></div>
-              <div class="evidence-icon">${c.icon||'📎'}</div>
-              <div class="evidence-title">${c.text}</div>
-              ${cluesFound.includes(c.id)?`<div class="evidence-detail">${c.detail}</div>`
-                :`<div style="text-align:center;font-size:0.65rem;color:#aa9970;margin-top:0.3rem;">（点击调查）</div>`}
-              ${cluesFound.includes(c.id)?`<div class="pin" style="top:-6px;left:50%;margin-left:-7px;"></div>`:''}
-            </div>`;
-          }).join('')}
-        </div>
-        <!-- 红绳连线（模拟） -->
-        ${cluesFound.length>=2?`
-        <div style="text-align:center;margin-top:0.5rem;font-size:0.7rem;color:#aa8860;font-family:'Courier New',monospace;">
-          ─── 线索关联中（${cluesFound.length}条证据）───
-        </div>`:''}
-      </div>
-
-      <!-- 嫌疑人照片墙 -->
-      <div class="cork-board" style="margin-top:1rem;">
-        <div style="font-family:'Courier New',monospace;color:#3d2208;font-size:0.75rem;margin-bottom:0.8rem;letter-spacing:2px;text-align:center;">
-          ★ SUSPECT LINEUP · ${suspectsQuestioned.length}/${currentCase.suspects.length} QUESTIONED ★
-        </div>
-        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-          ${currentCase.suspects.map(s=>`
-            <div class="suspect-photo ${suspectsQuestioned.includes(s.id)?'questioned':''}" onclick="questionSuspect('${s.id}')">
-              <div class="photo-pin"></div>
-              <div class="mugshot">${s.emoji}</div>
-              <div class="sus-name">${s.name}</div>
-              ${suspectsQuestioned.includes(s.id)?`
-                <div style="font-size:0.7rem;color:#5c3d1a;margin-top:0.3rem;line-height:1.4;">
-                  <div>🗣️ "${s.alibi}"</div>
-                  <div style="color:#887050;">💭 ${s.motive}</div>
-                </div>
-              `:`<div style="font-size:0.65rem;color:#aa9970;margin-top:0.3rem;">（点击讯问）</div>`}
-            </div>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- 指认区 -->
-      ${cluesFound.length>=2?`
-      <div class="paper-sheet" style="text-align:center;margin-top:1.5rem;">
-        <div style="font-family:'Courier New',monospace;color:#887050;font-size:0.7rem;letter-spacing:2px;">★ ARREST WARRANT ★</div>
-        <p style="color:#3d2208;font-style:italic;margin:0.5rem 0;">证据充足，申请签发逮捕令——</p>
-        <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
-          ${currentCase.suspects.map(s=>`
-            <button class="btn accuse-btn" onclick="accuse('${s.id}')" style="font-size:0.85rem;">
-              🔒 逮捕 ${s.emoji}${s.name}
-            </button>
-          `).join('')}
-        </div>
-        ${accuseWrong>0?`<p style="color:#cc2222;font-size:0.75rem;margin-top:0.5rem;">错误逮捕：${accuseWrong}次</p>`:''}
-      </div>`:''}
-
-      <div style="text-align:center;margin-top:1.5rem;">
-        <button class="btn btn-secondary" onclick="startCase();render();" style="font-size:0.85rem;">🔄 换一个案件</button>
-      </div>`;
-  }else if(phase==='win'){
-    const guilty=currentCase.suspects.find(s=>s.guilty);
-    root.innerHTML=`
-      <div class="case-folder" style="border-left-color:#2a8a2a;">
-        <div class="folder-tab" style="background:#c8e6c9;">CASE CLOSED ✓</div>
-        <div style="text-align:center;font-size:5rem;margin:1rem 0;">
-          <span class="magnify">🔍</span> → <span>🔓</span>
-        </div>
-        <h3 style="text-align:center;color:#2a5a2a;">案件告破！</h3>
-        <div style="text-align:center;font-size:1.5rem;margin:0.8rem 0;font-family:'Georgia',serif;">
-          真凶：<strong>${guilty.emoji} ${guilty.name}</strong>
-        </div>
-        <div class="typewriter">🗣️ <strong>${guilty.name}的供词：</strong><br>"${guilty.confession}"</div>
-        <div class="sticky-note" style="margin:1rem auto;max-width:400px;">
-          <strong>📋 结案报告：</strong><br>${currentCase.conclusion}
-        </div>
-        <div style="text-align:center;display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;">
-          <button class="btn btn-primary" onclick="startCase();render();">📁 下一个案件</button>
-          <a href="game.html" class="btn btn-secondary">🎮 游戏厅</a>
-        </div>
-        <div style="text-align:center;font-size:0.65rem;color:#887050;margin-top:1rem;font-family:'Courier New',monospace;">
-          案件已归档 · 企鹅船长盖章 · 🐧✒️
-        </div>
-      </div>`;
+  if(ph==='intro'){
+    r.innerHTML=`<div class="dcase"><h3>📁 ${cur.title}</h3><p style="color:var(--text-secondary);">受害者：${cur.victim}</p><p style="color:var(--text-secondary);margin:0.8rem 0;">${cur.intro}</p><p style="color:var(--text-muted);">🐧 企鹅船长：开始调查吧。</p>
+    <div style="text-align:center;margin-top:1rem;"><button class="btn btn-primary" onclick="ph='investigate';render();">🔍 开始调查</button></div></div>`;
+  }else if(ph==='investigate'||ph==='wrong'){
+    r.innerHTML=(ph==='wrong'?'<p style="color:var(--color-accent-pink);text-align:center;">❌冤枉好人！再查！</p>':'')+
+      `<div class="dcase"><h3>🔍 线索 (${cf.length}/${cur.clues.length})</h3><div>${cur.clues.map(c=>`<span class="clue${cf.includes(c.id)?' found':''}" onclick="findClue('${c.id}')">${c.t}${cf.includes(c.id)?'<br><small>'+c.d+'</small>':'<br><small>(点击调查)</small>'}</span>`).join('')}</div></div>
+      <div class="dcase"><h3>👥 嫌疑人 (${sq.length}/${cur.sus.length})</h3><div style="text-align:center;">${cur.sus.map(s=>`<span class="sus${sq.includes(s.id)?' asked':''}" onclick="askSus('${s.id}')"><div class="emoji">${s.e}</div><div class="name">${s.n}</div>${sq.includes(s.id)?'<small>🗣️'+s.a+'<br>💭'+s.m+'</small>':'<small>(点击讯问)</small>'}</span>`).join('')}</div></div>
+      ${cf.length>=2?`<div style="text-align:center;margin-top:1rem;"><p style="color:var(--text-muted);">证据足够，指认真凶：</p>${cur.sus.map(s=>`<button class="btn btn-acc" onclick="accuse('${s.id}')" style="margin:0.2rem;">逮捕${s.e}${s.n}</button>`).join('')}${wr>0?`<p style="color:var(--color-accent-pink);">错误：${wr}次</p>`:''}</div>`:''}
+      <div style="text-align:center;margin-top:1rem;"><button class="btn btn-secondary" onclick="startCase();">🔄换案件</button></div>`;
+  }else if(ph==='win'){
+    const g=cur.sus.find(s=>s.id===cur.ans);
+    r.innerHTML=`<div class="dcase" style="border-color:var(--color-accent-teal);text-align:center;"><h3>🎉案件告破！</h3><div style="font-size:4rem;">🔓</div><p style="font-size:1.2rem;"><strong>真凶：${g.e} ${g.n}</strong></p><p style="color:var(--text-secondary);">🗣️ "${g.c}"</p><p style="color:var(--text-muted);margin-top:0.5rem;">${cur.end}</p>
+    <div style="margin-top:1rem;"><button class="btn btn-primary" onclick="startCase();">📁下个案件</button> <a href="game.html" class="btn btn-secondary">🎮游戏厅</a></div></div>`;
   }
 }
-
 startCase();
 </script>
 </body>
