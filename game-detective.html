@@ -418,11 +418,13 @@ function render(){
           </div>
         </div>
       </div>
-      <div style="text-align:center;margin:1.5rem 0;">
+      <div style="text-align:center;margin:1.5rem 0;display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;">
         <button class="btn btn-primary" onclick="phase='investigate';render();" style="font-size:1.1rem;padding:0.8rem 2.5rem;">
           🔍 打开案件档案
         </button>
-      </div>`;
+        <a href="game.html" class="btn btn-secondary" style="font-size:1rem;padding:0.8rem 1.5rem;">🚪 退出</a>
+      </div>
+      <p style="text-align:center;color:var(--text-muted);font-size:0.75rem;margin-top:0.5rem;">⌨️ 点击证据卡片调查 | 点击嫌疑人照片讯问 | 收集足够线索后逮捕真凶</p>`;
   }else if(phase==='investigate'||phase==='wrong'){
     root.innerHTML=`
       ${phase==='wrong'?`<div style="background:rgba(200,0,0,0.15);border:1px solid #cc2222;border-radius:8px;padding:0.8rem;text-align:center;margin-bottom:1rem;color:#ff6666;font-family:'Georgia',serif;">

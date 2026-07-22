@@ -55,8 +55,13 @@
 <canvas id="gc" width="900" height="460"></canvas>
 
 <p style="color:var(--text-muted);margin-top:0.6rem;font-size:0.82rem;line-height:1.5;">
-⌨️ <strong>空格/W/↑</strong> 跳跃(可二段跳) | <strong>S/↓</strong> 蹲下滑铲 | 🖱️ <strong>点击</strong> 自动连射 | <strong>Q</strong> 技能 | <strong>E</strong> 大招
+⌨️ <strong>空格/W/↑</strong> 跳跃(可二段跳) | <strong>S/↓</strong> 蹲下滑铲 | 🖱️ <strong>点击</strong> 自动连射 | <strong>Q</strong> 技能 | <strong>E</strong> 大招 | <strong>P</strong> 暂停
 </p>
+<div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.5rem;">
+<button class="btn btn-secondary" onclick="window.pauseGame()" style="font-size:0.8rem;padding:0.3rem 1rem;">⏯️ 暂停(P)</button>
+<button class="btn btn-secondary" onclick="window.restart()" style="font-size:0.8rem;padding:0.3rem 1rem;">🔄 重新开始</button>
+<a href="game.html" class="btn btn-secondary" style="font-size:0.8rem;padding:0.3rem 1rem;">🚪 退出</a>
+</div>
 </div>
 </section>
 </main>
@@ -161,7 +166,7 @@ let player,camX=0,dist=0,score=0,hp=5,kills=0;
 let enemies=[],bullets=[],particles=[],floats=[],powerups=[],effects=[];
 let weaponLv=1,weaponType='normal',weaponT=0,ammo=30,maxA=30,reload=0;
 let skillCD=0,ultCD=0,ultT=0,invT=0,shake=0,spawnT=0;
-let gameOn=true,paused=false,jumpHeld=false;
+let gameOn=false,paused=false,jumpHeld=false,gameStarted=false;
 let bgMountains=[],bgClouds=[],groundDetail=[];
 for(let i=0;i<40;i++)bgMountains.push({x:Math.random()*W*4,h:70+Math.random()*130});
 for(let i=0;i<20;i++)bgClouds.push({x:Math.random()*W*4,y:20+Math.random()*120,w:60+Math.random()*140});
@@ -233,10 +238,9 @@ window.addEventListener('keyup',onUp);
 
 // 鼠标/触摸射击
 let mouseDown=false;
-cv.addEventListener('mousedown',e=>{mouseDown=true;e.preventDefault();});
+cv.addEventListener('mousedown',e=>{if(!gameStarted){startGame();}mouseDown=true;e.preventDefault();});
 cv.addEventListener('mouseup',()=>{mouseDown=false;});
-cv.addEventListener('touchstart',e=>{mouseDown=true;
-  // 触摸上半=跳跃，下半=蹲下
+cv.addEventListener('touchstart',e=>{if(!gameStarted)startGame();mouseDown=true;
   const r=cv.getBoundingClientRect();const ty=e.touches[0].clientY-r.top;
   if(ty<H/2&&gameOn&&!paused)playerJump();
   e.preventDefault();
@@ -463,18 +467,43 @@ function draw(){
   floats.forEach(f=>{cx.fillStyle=f.c;cx.font='bold 14px Quicksand';cx.textAlign='center';cx.globalAlpha=f.l/30;cx.fillText(f.t,f.x-camX,f.y);});cx.globalAlpha=1;
 
   if(reload>0){cx.fillStyle='#FFF';cx.font='bold 14px Quicksand';cx.textAlign='center';cx.fillText('🔄换弹',px,py-50);}
-  if(paused){cx.fillStyle='rgba(0,0,0,0.6)';cx.fillRect(0,0,W,H);cx.fillStyle='#FFF';cx.font='bold 36px Fredoka One';cx.textAlign='center';cx.fillText('⏸️',W/2,H/2);}
+  if(paused){cx.fillStyle='rgba(0,0,0,0.6)';cx.fillRect(0,0,W,H);cx.fillStyle='#FFF';cx.font='bold 36px Fredoka One';cx.textAlign='center';cx.fillText('⏸️ 暂停中',W/2,H/2);
+    cx.font='16px Quicksand';cx.fillText('按 P 继续 | 点击退出按钮返回大厅',W/2,H/2+40);}
+  // 开始画面
+  if(!gameStarted){
+    cx.fillStyle='rgba(0,0,0,0.75)';cx.fillRect(0,0,W,H);
+    cx.fillStyle='#FD0';cx.font='bold 40px Fredoka One';cx.textAlign='center';cx.fillText('🏃 卡创星际快跑',W/2,H/2-50);
+    cx.fillStyle='#FFF';cx.font='20px Quicksand';cx.fillText('选择角色后，点击屏幕或按空格开始！',W/2,H/2+10);
+    cx.font='16px Quicksand';cx.fillText('空格=跳跃 | S=蹲下 | 点击=射击 | Q=技能 | E=大招',W/2,H/2+45);
+    cx.fillStyle='#0CC';cx.font='bold 22px Quicksand';cx.fillText('👆 点击这里开始游戏 👆',W/2,H/2+85);
+  }
 }
 
 function restart(){
   player={x:80,y:GROUND-56,w:28,h:56,vy:0,jumps:0,maxJ:2,onGround:true,crouching:false,st:0,jumpT:0};
   camX=0;dist=0;score=0;hp=hero.hp;kills=0;enemies=[];bullets=[];particles=[];floats=[];powerups=[];effects=[];
   weaponLv=1;weaponType='normal';weaponT=0;ammo=maxA;reload=0;skillCD=0;ultCD=0;ultT=0;invT=0;spawnT=0;
-  gameOn=true;paused=false;updateHUD();
+  gameOn=true;paused=false;gameStarted=true;updateHUD();
+  // 清除结束覆盖层
+  document.querySelectorAll('.overlay-end').forEach(e=>e.remove());
 }
+function startGame(){
+  if(gameStarted)return;
+  restart();
+}
+function pauseGame(){
+  if(!gameStarted||!gameOn)return;
+  paused=!paused;showToast(paused?'⏸️ 暂停中':'▶️ 继续');
+}
+// 暴露到全局
+window.restart=restart;window.pauseGame=pauseGame;window.startGame=startGame;
 
 function loop(){update();draw();requestAnimationFrame(loop);}
-restart();updateHUD();loop();
+// 初始化时不自动开始
+player={x:80,y:GROUND-56,w:28,h:56,vy:0,jumps:0,maxJ:2,onGround:true,crouching:false,st:0,jumpT:0};
+camX=0;dist=0;score=0;hp=hero.hp;kills=0;enemies=[];bullets=[];particles=[];floats=[];powerups=[];effects=[];
+weaponLv=1;weaponType='normal';weaponT=0;ammo=maxA;reload=0;skillCD=0;ultCD=0;ultT=0;invT=0;spawnT=0;
+updateHUD();loop();
 })();
 </script>
 </body>

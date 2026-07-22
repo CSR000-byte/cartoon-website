@@ -47,7 +47,12 @@
     <div class="lane-key" id="keyJ">⬆️</div>
     <div class="lane-key" id="keyK">➡️</div>
   </div>
-  <p style="color:var(--text-muted);margin-top:0.5rem;font-size:0.8rem;">⌨️ <strong>D F J K</strong> 对应四列 | 音符落到判定线时按下对应键</p>
+  <p style="color:var(--text-muted);margin-top:0.5rem;font-size:0.8rem;">⌨️ <strong>D F J K</strong> 对应四列 | 音符落到判定线时按下对应键 | <strong>P</strong> 暂停</p>
+<div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.5rem;">
+<button class="btn btn-secondary" onclick="window.pauseGame()" style="font-size:0.8rem;padding:0.3rem 1rem;">⏯️ 暂停(P)</button>
+<button class="btn btn-secondary" onclick="window.restart()" style="font-size:0.8rem;padding:0.3rem 1rem;">🔄 重新开始</button>
+<a href="game.html" class="btn btn-secondary" style="font-size:0.8rem;padding:0.3rem 1rem;">🚪 退出</a>
+</div>
 </div>
 </section>
 </main>
@@ -57,12 +62,14 @@
 (function(){
   const canvas=document.getElementById('rhythmCanvas'),ctx=canvas.getContext('2d');
   const LANES=4,LANE_W=100,LANE_X=[150,280,410,540],HIT_Y=420,HIT_ZONE=50;
-  let notes=[],particles=[],floats=[],score=0,combo=0,maxCombo=1,misses=0,gameOn=true;
+  let notes=[],particles=[],floats=[],score=0,combo=0,maxCombo=1,misses=0,gameOn=false,gameStarted=false;
   const keyMap={},keyLane={'d':0,'f':1,'j':2,'k':3,'KeyD':0,'KeyF':1,'KeyJ':2,'KeyK':3};
   const laneColors=['#6C5CE7','#FF7675','#FDCB6E','#00CEC9'];
   const laneEmojis=['🟣','🔴','🟡','🟢'];
 
   document.addEventListener('keydown',e=>{
+    if(e.key.toLowerCase()==='p'){pauseGame();return;}
+    if(!gameStarted){startGame();return;}
     if(!gameOn)return restart();
     const lane=keyLane[e.key]??keyLane[e.code];
     if(lane===undefined)return;
@@ -95,7 +102,10 @@
     });
   });
 
-  function restart(){notes=[];particles=[];floats=[];score=0;combo=0;misses=0;gameOn=true;updateHUD();}
+  function startGame(){gameOn=true;gameStarted=true;notes=[];particles=[];floats=[];score=0;combo=0;misses=0;updateHUD();}
+function restart(){notes=[];particles=[];floats=[];score=0;combo=0;misses=0;gameOn=true;updateHUD();}
+function pauseGame(){if(!gameStarted||!gameOn)return;gameOn=!gameOn;showToast(gameOn?'▶️ 继续':'⏸️ 暂停中');}
+window.restart=restart;window.pauseGame=pauseGame;window.startGame=startGame;
 
   function spawnNote(){notes.push({lane:Math.floor(Math.random()*LANES),y:-30,x:LANE_X[Math.floor(Math.random()*LANES)],hit:false,speed:3+score/500});notes[notes.length-1].x=LANE_X[notes[notes.length-1].lane];}
 
@@ -148,7 +158,19 @@
 
   function loop(){update();draw();requestAnimationFrame(loop);}
   for(let i=0;i<3;i++)spawnNote();
-  loop();
+    // 开始/暂停
+  if(!gameStarted){
+    ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#FD0';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('🎵 彩虹马节奏猫步',canvas.width/2,canvas.height/2-40);
+    ctx.fillStyle='#FFF';ctx.font='18px Quicksand';ctx.fillText('点击屏幕开始游戏！',canvas.width/2,canvas.height/2+10);
+    ctx.fillStyle='#0CC';ctx.font='bold 18px Quicksand';ctx.fillText('👆 点击开始 👆',canvas.width/2,canvas.height/2+50);
+  }else if(!gameOn){
+    ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️ 暂停中',canvas.width/2,canvas.height/2);
+  }
+}
+canvas.addEventListener('click',()=>{if(!gameStarted)startGame();});
+loop();
 })();
 </script>
 </body>
