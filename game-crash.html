@@ -1,173 +1,115 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🚀 星际翻车模拟器 · 卡创</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    .crash-container{max-width:750px;margin:0 auto;text-align:center;}
-    #crashCanvas{border-radius:var(--radius-lg);border:3px solid rgba(255,255,255,0.1);box-shadow:var(--shadow-float);display:block;margin:0 auto;max-width:100%;background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a1a 100%);}
-    .crash-hud{display:flex;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
-    .crash-stat{background:var(--bg-card);border-radius:var(--radius-md);padding:0.5rem 1.2rem;border:1px solid rgba(255,255,255,0.08);font-family:var(--font-heading);font-size:1.1rem;}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🚀 翻车模拟器 · 卡创</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+#gc{border-radius:var(--radius-lg);border:3px solid rgba(255,255,255,0.12);box-shadow:var(--shadow-float);display:block;margin:0 auto;max-width:100%;background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a1a 100%);}
+.hud{display:flex;justify-content:center;gap:1rem;margin:0.5rem 0;flex-wrap:wrap;}
+.hud span{background:var(--bg-card);padding:0.35rem 0.9rem;border-radius:var(--radius-pill);font-family:var(--font-heading);font-size:0.9rem;border:1px solid rgba(255,255,255,0.1);}
+</style>
 </head>
 <body>
 <canvas id="stars-canvas"></canvas>
-<header class="site-header">
-  <div class="nav-container">
-    <a href="game.html" class="nav-logo"><span class="logo-icon">💥</span><span>卡创 · 翻车模拟器</span></a>
-    <nav><ul class="nav-links"><li><a href="game.html">🎮 游戏厅</a></li><li><a href="index.html">🏠 首页</a></li></ul></nav>
-  </div>
-</header>
-<main>
-<section class="page-container">
-<div class="crash-container">
-  <div class="section-header">
-    <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;animation:float 2s ease-in-out infinite;">💥 搞笑游戏</div>
-    <h1 class="section-title">🚀 星际小猫号·翻车模拟器</h1>
-    <p class="section-subtitle">驾驶星际小猫号穿越陨石带！队友们会给你「建议」——<br><strong style="color:var(--color-accent-pink);">听他们的 = 必炸。</strong></p>
-  </div>
-  <div class="crash-hud">
-    <div class="crash-stat"><span style="font-size:0.65rem;color:var(--text-muted);display:block;">⏱️ 存活</span><span id="timeDisplay">0.0</span>s</div>
-    <div class="crash-stat"><span style="font-size:0.65rem;color:var(--text-muted);display:block;">🏆 最佳</span><span id="bestDisplay">0.0</span>s</div>
-    <div class="crash-stat"><span style="font-size:0.65rem;color:var(--text-muted);display:block;">💥 翻车</span><span id="crashDisplay">0</span>次</div>
-  </div>
-  <canvas id="crashCanvas" width="700" height="500"></canvas>
-  <p style="color:var(--text-muted);margin-top:0.8rem;font-size:0.85rem;">⌨️ ⬆️⬇️ <strong>上下方向键</strong> 移动飞船 | 躲避陨石 | 🗯️ 队友「建议」仅供参考 | <strong>P</strong> 暂停</p>
-<div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.5rem;">
-<button class="btn btn-secondary" onclick="window.pauseGame()" style="font-size:0.8rem;padding:0.3rem 1rem;">⏯️ 暂停(P)</button>
-<button class="btn btn-secondary" onclick="window.restart()" style="font-size:0.8rem;padding:0.3rem 1rem;">🔄 重新开始</button>
-<a href="game.html" class="btn btn-secondary" style="font-size:0.8rem;padding:0.3rem 1rem;">🚪 退出</a>
+<header class="site-header"><div class="nav-container">
+<a href="game.html" class="nav-logo"><span class="logo-icon">💥</span><span>翻车模拟器</span></a>
+<nav><ul class="nav-links"><li><a href="game.html">🎮游戏厅</a></li><li><a href="index.html">🏠首页</a></li></ul></nav>
+</div></header>
+<main><section class="page-container" style="text-align:center;">
+<h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">🚀 翻车模拟器</h2>
+<p style="color:var(--text-secondary);margin-bottom:0.5rem;">⬆️⬇️移动飞船躲避陨石！队友建议仅供参考！P暂停 M静音</p>
+<div class="hud"><span>⏱️<b id="t">0.0s</b></span><span>🏆<b id="b">0.0s</b></span></div>
+<canvas id="gc" width="700" height="500"></canvas>
+<div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
+<button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️暂停</button>
+<button class="btn btn-secondary" onclick="G.restart()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🔄重来</button>
+<a href="game.html" class="btn btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🚪退出</a>
 </div>
-</div>
-</section>
-</main>
-<div class="toast" id="toast"></div>
+</section></main>
 <script src="js/main.js"></script>
 <script>
-// 🎵 配乐
+// 🎵
 let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();
-function pn(f,d,s,t='square',v=0.05){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}
-function bgm(){if(!mo)return;const n=ac.currentTime;const m=[330,392,440,392,349,330,294,330,392,440,523,440,392,349,330,294];m.forEach((f,i)=>pn(f,0.18,n+i*0.2,'triangle',0.04));setTimeout(bgm,m.length*200+700);}
-bgm();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m'){mo=!mo;showToast(mo?'🔊':'🔇');}});
-</script>
-<script>
+function pn(f,d,s,t='square',v=0.04){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}
+function bgm(){if(!mo)return;const n=ac.currentTime;[330,392,440,392,349,330,294,330,392,440,523,440,392,349,330,294].forEach((f,i)=>pn(f,0.18,n+i*0.2,'triangle',0.04));setTimeout(bgm,3500);}bgm();
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m')mo=!mo;});
+
+// 游戏
 (function(){
-  const canvas=document.getElementById('crashCanvas'),ctx=canvas.getContext('2d');
-  if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==='number')r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.arcTo(x+w,y,x+w,y+r.tr,r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.arcTo(x+w,y+h,x+w-r.br,y+h,r.br);ctx.lineTo(x+r.bl,y+h);ctx.arcTo(x,y+h,x,y+h-r.bl,r.bl);ctx.lineTo(x,y+r.tl);ctx.arcTo(x,y,x+r.tl,y,r.tl);ctx.closePath();};}
-  let shipY=canvas.height/2,shipX=120,shipW=50,shipH=35;
-  let rocks=[],particles=[],floats=[],score=0,best=localStorage.getItem('crashBest')||0,crashes=0;
-  let gameOn=true,adviceTimer=0,shakeTimer=0;
-  const advice=[
-    {text:'小星：往左！不，往右！等等我想想…',from:'🐱',wrong:'left'},
-    {text:'火狐：冲过去！我有23%的把握没事！',from:'🦊',wrong:'up'},
-    {text:'胖达：慢一点…我要晕船了…',from:'🐼',wrong:'down'},
-    {text:'月兔：导航显示前方安全！（信号延迟3秒）',from:'🐰',wrong:'any'},
-    {text:'彩虹马：加速冲！我有魔法护盾！（没有）',from:'🦄',wrong:'up'},
-    {text:'企鹅船长：保持航向…虽然这艘船迟早会炸。',from:'🐧',wrong:'none'},
-  ];
-  let currentAdvice=null,adviceLife=0;
+const cv=document.getElementById('gc'),ctx=cv.getContext('2d');
+const W=cv.width,H=cv.height;
+let sy=H/2,sx=120;
+let rocks=[],particles=[],score=0,best=parseFloat(localStorage.getItem('cb'))||0,go=true,pa=false;
+let adviceTimer=0,currentAdvice=null,adviceLife=0;
+const adviceList=[
+  {text:'小星：往左！不对，往右！等等…',from:'🐱'},
+  {text:'火狐：冲！有23%把握没事！',from:'🦊'},
+  {text:'胖达：慢点…要晕船了…',from:'🐼'},
+  {text:'月兔：导航显示安全！（延迟3秒）',from:'🐰'},
+  {text:'彩虹马：加速！我有魔法护盾！（假的）',from:'🦄'},
+  {text:'企鹅船长：保持航向…迟早会炸。',from:'🐧'},
+];
 
-  document.addEventListener('keydown',e=>{if(e.key==='ArrowUp')shipY-=25;if(e.key==='ArrowDown')shipY+=25;shipY=Math.max(20,Math.min(canvas.height-20,shipY));});
+function spR(){rocks.push({x:W+50,y:Math.random()*H,r:15+Math.random()*25,vx:-(2+Math.random()*3+score/10),vy:(Math.random()-0.5)*2,c:['#888','#FDCB6E','#FF7675','#6C5CE7'][Math.floor(Math.random()*4)]});}
+function spP(x,y,c,n){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*8-2,l:20+Math.random()*25,c,r:Math.random()*3+1});}
 
-  canvas.addEventListener('touchmove',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();shipY=(e.touches[0].clientY-r.top)*(canvas.height/r.height);shipY=Math.max(20,Math.min(canvas.height-20,shipY));},{passive:false});
-
-  canvas.addEventListener('click',e=>{if(!gameOn)restart();});
-  function restart(){shipY=canvas.height/2;rocks=[];particles=[];floats=[];score=0;crashes++;gameOn=true;adviceTimer=0;currentAdvice=null;document.getElementById('crashDisplay').textContent=crashes;}
-  function pauseGame(){if(!gameOn)return;gameOn=!gameOn;showToast(gameOn?'▶️ 继续':'⏸️ 暂停中');}
-  window.restart=restart;window.pauseGame=pauseGame;
-  document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='p')pauseGame();});
-
-  function spawnRock(){
-    const r=15+Math.random()*25;
-    rocks.push({x:canvas.width+40,y:Math.random()*canvas.height,r,vy:(Math.random()-0.5)*2,vx:-(2+Math.random()*3+score/10),color:['#888','#FDCB6E','#FF7675','#6C5CE7'][Math.floor(Math.random()*4)]});
-  }
-
-  function hit(){
-    gameOn=false;score=Math.floor(score*10)/10;
-    if(score>best){best=score;localStorage.setItem('crashBest',best);}
-    document.getElementById('bestDisplay').textContent=best;
-    for(let i=0;i<50;i++)particles.push({x:shipX,y:shipY,vx:(Math.random()-0.5)*12,vy:(Math.random()-0.5)*12,life:30+Math.random()*30,color:'#FF7675',r:Math.random()*4+1});
-    const taunts=['企鹅船长：我就知道。3.7秒，比上次还差。','火狐：别难过！下次成功率就是24%了！','胖达：要不要先吃点东西压压惊？','小星：嘿！你比我迷路还快！','彩虹马：飞船保险了解一下？现在买打9.8折！'];
-    setTimeout(()=>{
-      const ov=document.createElement('div');
-      ov.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:1000;';
-      ov.innerHTML=`<div style="background:var(--bg-dark);border:2px solid var(--color-primary);border-radius:var(--radius-xl);padding:2.5rem;text-align:center;max-width:420px;box-shadow:var(--shadow-float-hover);">
-        <div style="font-size:5rem;">🚀💥</div><h2 style="font-family:var(--font-heading);font-size:2rem;">翻车了！</h2>
-        <p style="color:var(--text-secondary);">${taunts[Math.floor(Math.random()*taunts.length)]}</p>
-        <div style="font-size:4rem;font-family:var(--font-heading);color:var(--color-accent-yellow);">${score}s</div>
-        <p style="color:var(--text-muted);">🏆 最佳纪录: ${best}s | 已翻车: ${crashes}次</p>
-        <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
-          <button class="btn btn-primary" onclick="this.closest('div[style*=\"fixed\"]').remove();restart();">🔄 再来！</button>
-          <a href="game.html" class="btn btn-secondary">🎮 游戏厅</a></div></div>`;
-      document.body.appendChild(ov);
-    },600);
-  }
-
-  function update(){
-    if(!gameOn)return;
-    score+=0.016;
-    document.getElementById('timeDisplay').textContent=(Math.floor(score*10)/10).toFixed(1);
-    if(Math.random()<0.02+score/300)spawnRock();
-    if(score>3&&Math.random()<0.015+score/500)spawnRock();
-
-    adviceTimer++;
-    if(adviceTimer>120+Math.random()*180){
-      adviceTimer=0;currentAdvice=advice[Math.floor(Math.random()*advice.length)];adviceLife=150;
-    }
-    if(adviceLife>0)adviceLife--;
-    if(adviceLife<=0)currentAdvice=null;
-
-    rocks.forEach(r=>{r.x+=r.vx;r.y+=r.vy;});
-    rocks=rocks.filter(r=>r.x>-80);
-    rocks.forEach(r=>{
-      if(Math.abs(r.x-shipX)<r.r+shipW/2&&Math.abs(r.y-shipY)<r.r+shipH/2){hit();}
-    });
-    particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life--;p.vx*=0.95;p.vy*=0.95;});
-    particles=particles.filter(p=>p.life>0);
-    if(shakeTimer>0)shakeTimer--;
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    // 背景星星
-    for(let i=0;i<40;i++){
-      const sx=(i*173+score*30)%canvas.width,sy=(i*97)%canvas.height;
-      ctx.fillStyle='rgba(255,255,255,'+(0.3+Math.sin(score*2+i)*0.2)+')';
-      ctx.beginPath();ctx.arc(sx,sy,1,0,Math.PI*2);ctx.fill();
-    }
-    // 陨石
-    rocks.forEach(r=>{
-      ctx.font=`${r.r*1.3}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🪨',r.x,r.y);
-    });
-    // 粒子
-    particles.forEach(p=>{ctx.fillStyle=p.color;ctx.globalAlpha=p.life/30;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
-    // 飞船
-    const sx=shakeTimer>0?shipX+(Math.random()-0.5)*shakeTimer*2:shipX;
-    const sy=shakeTimer>0?shipY+(Math.random()-0.5)*shakeTimer*2:shipY;
-    ctx.font='40px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚀',sx,sy);
-    // 护盾环
-    ctx.strokeStyle='rgba(108,92,231,0.5)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(sx,sy,35,0,Math.PI*2);ctx.stroke();
-    // 建议气泡
-    if(currentAdvice){
-      ctx.fillStyle='rgba(0,0,0,0.8)';const bw=ctx.measureText(currentAdvice.text).width+20;
-      const bx=sx+60,by=sy-60;
-      ctx.beginPath();ctx.roundRect(bx-10,by-15,bw+20,35,15);ctx.fill();
-      ctx.fillStyle='#fff';ctx.font='bold 13px Quicksand,sans-serif';ctx.textAlign='left';
-      ctx.fillText(currentAdvice.from+' '+currentAdvice.text,bx,by+5);
-    }
-  }
-  if(!gameOn){
-    ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️ 暂停中',canvas.width/2,canvas.height/2);
-  }
+function hit(){
+  go=false;spP(sx,sy,'#FF7675',50);
+  if(score>best){best=score;localStorage.setItem('cb',best);}
+  document.getElementById('b').textContent=best.toFixed(1);
+  const taunts=['企鹅船长：我就知道。','火狐：下次成功率24%！','胖达：要吃点东西压惊吗？','小星：比我迷路还快！'];
+  setTimeout(()=>{document.body.insertAdjacentHTML('beforeend','<div class="ov" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:1000;" onclick="this.remove();G.restart()"><div style="background:var(--bg-dark);border:2px solid var(--color-primary);border-radius:var(--radius-xl);padding:2rem;text-align:center;"><div style="font-size:4rem;">💥</div><h2>翻车!</h2><p>'+taunts[Math.floor(Math.random()*taunts.length)]+'</p><div style="font-size:3rem;color:var(--color-accent-yellow);">'+score.toFixed(1)+'s</div><p>🏆最佳:'+best.toFixed(1)+'s</p><button class="btn btn-primary">🔄再来</button></div></div>');},600);
 }
-function loop(){update();draw();requestAnimationFrame(loop);}
-  document.getElementById('bestDisplay').textContent=best;
-  for(let i=0;i<4;i++)spawnRock();
-  loop();
+
+// 输入
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(k==='p'){pa=!pa;return;}
+  if(!go||pa)return;
+  if(k==='arrowup'||k==='w')sy-=20;
+  if(k==='arrowdown'||k==='s')sy+=20;
+  sy=Math.max(30,Math.min(H-30,sy));
+});
+
+function upd(){
+  if(!go||pa)return;
+  score+=0.016;
+  document.getElementById('t').textContent=score.toFixed(1);
+
+  if(Math.random()<0.02+score/300)spR();
+  if(score>4&&Math.random()<0.02+score/500)spR();
+
+  adviceTimer++;if(adviceTimer>100+Math.random()*150){adviceTimer=0;currentAdvice=adviceList[Math.floor(Math.random()*adviceList.length)];adviceLife=130;}
+  if(adviceLife>0)adviceLife--;else currentAdvice=null;
+
+  rocks.forEach(r=>{r.x+=r.vx;r.y+=r.vy;});
+  rocks=rocks.filter(r=>r.x>-80);
+  rocks.forEach(r=>{if(Math.abs(r.x-sx)<r.r+20&&Math.abs(r.y-sy)<r.r+20)hit();});
+
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.l--;p.vx*=0.95;p.vy*=0.95;});particles=particles.filter(p=>p.l>0);
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // 星星
+  for(let i=0;i<50;i++){ctx.fillStyle=`rgba(255,255,255,${0.2+Math.sin(i+score*3)*0.15})`;ctx.beginPath();ctx.arc((i*137+score*30)%W,(i*97)%H*0.6,1,0,Math.PI*2);ctx.fill();}
+  // 陨石
+  rocks.forEach(r=>{ctx.font=`${r.r}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🪨',r.x,r.y);});
+  // 粒子
+  particles.forEach(p=>{ctx.fillStyle=p.c;ctx.globalAlpha=p.l/30;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
+  // 飞船
+  ctx.font='40px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚀',sx,sy);
+  // 建议气泡
+  if(currentAdvice){const bw=ctx.measureText(currentAdvice.text).width+15;ctx.fillStyle='rgba(0,0,0,0.8)';ctx.fillRect(sx+50,bw>200?sy-70:sy-55,bw+10,28);ctx.fillStyle='#fff';ctx.font='bold 13px Quicksand';ctx.textAlign='left';ctx.fillText(currentAdvice.from+' '+currentAdvice.text,sx+55,bw>200?sy-52:sy-37);}
+  if(pa){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️暂停',W/2,H/2);}
+}
+
+function rst(){sy=H/2;rocks=[];particles=[];score=0;go=true;pa=false;adviceTimer=0;currentAdvice=null;document.getElementById('b').textContent=best.toFixed(1);document.querySelectorAll('.ov').forEach(e=>e.remove());}
+window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
+
+function loop(){upd();draw();requestAnimationFrame(loop);}
+rst();for(let i=0;i<4;i++)spR();loop();
 })();
 </script>
 </body>
