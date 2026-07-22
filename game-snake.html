@@ -24,12 +24,12 @@
 <canvas id="gc" width="400" height="400"></canvas>
 <div style="margin-top:0.5rem;">
 <div style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:0.3rem;">
-<button class="btn btn-secondary" onmousedown="setDir(0,-1)" ontouchstart="setDir(0,-1);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬆️</button>
+<button class="btn btn-secondary" onmousedown="G.dir(0,-1)" ontouchstart="G.dir(0,-1);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬆️</button>
 </div>
 <div style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:0.3rem;">
-<button class="btn btn-secondary" onmousedown="setDir(-1,0)" ontouchstart="setDir(-1,0);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬅️</button>
-<button class="btn btn-secondary" onmousedown="setDir(0,1)" ontouchstart="setDir(0,1);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬇️</button>
-<button class="btn btn-secondary" onmousedown="setDir(1,0)" ontouchstart="setDir(1,0);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">➡️</button>
+<button class="btn btn-secondary" onmousedown="G.dir(-1,0)" ontouchstart="G.dir(-1,0);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬅️</button>
+<button class="btn btn-secondary" onmousedown="G.dir(0,1)" ontouchstart="G.dir(0,1);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬇️</button>
+<button class="btn btn-secondary" onmousedown="G.dir(1,0)" ontouchstart="G.dir(1,0);event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">➡️</button>
 </div>
 <div style="display:flex;gap:0.5rem;justify-content:center;">
 <button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️</button>
@@ -100,7 +100,7 @@ function draw(){
   if(!go){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#F44';ctx.font='bold 28px Fredoka One';ctx.textAlign='center';ctx.fillText('游戏结束',W/2,H/2-10);ctx.fillStyle='#FFF';ctx.font='16px Quicksand';ctx.fillText('⭐'+sc+' 点击重来',W/2,H/2+30);}
 }
 cv.addEventListener('click',()=>{if(!go)rst();});
-window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
+window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;},dir:setDir};
 
 function loop(){upd();draw();requestAnimationFrame(loop);}
 rst();loop();

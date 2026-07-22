@@ -22,8 +22,8 @@
 <div class="hud"><span>⏱️<b id="t">0.0s</b></span><span>🏆<b id="b">0.0s</b></span></div>
 <canvas id="gc" width="700" height="500"></canvas>
 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
-<button class="btn btn-secondary" onmousedown="sy-=20" onmouseup="" ontouchstart="sy-=20;event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬆️上</button>
-<button class="btn btn-secondary" onmousedown="sy+=20" onmouseup="" ontouchstart="sy+=20;event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬇️下</button>
+<button class="btn btn-secondary" onmousedown="G.up()" ontouchstart="G.up();event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬆️上</button>
+<button class="btn btn-secondary" onmousedown="G.down()" ontouchstart="G.down();event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬇️下</button>
 <button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️</button>
 <button class="btn btn-secondary" onclick="G.restart()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🔄</button>
 <a href="game.html" class="btn btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🚪</a>
@@ -108,7 +108,7 @@ function draw(){
 }
 
 function rst(){sy=H/2;rocks=[];particles=[];score=0;go=true;pa=false;adviceTimer=0;currentAdvice=null;document.getElementById('b').textContent=best.toFixed(1);document.querySelectorAll('.ov').forEach(e=>e.remove());}
-window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
+window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;},up:()=>{sy-=25;sy=Math.max(30,Math.min(H-30,sy));},down:()=>{sy+=25;sy=Math.max(30,Math.min(H-30,sy));}};
 
 function loop(){upd();draw();requestAnimationFrame(loop);}
 rst();for(let i=0;i<4;i++)spR();loop();

@@ -22,10 +22,10 @@
 <div class="hud"><span>⭐<b id="s">0</b></span><span>❤️<b id="h">5</b></span><span>🔫<b id="w">Lv1</b></span><span>💀<b id="k">0</b></span><span>📏<b id="d">0m</b></span></div>
 <canvas id="gc" width="900" height="460"></canvas>
 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
-<button class="btn btn-secondary" onmousedown="ks['arrowleft']=true" onmouseup="ks['arrowleft']=false" ontouchstart="ks['arrowleft']=true;event.preventDefault()" ontouchend="ks['arrowleft']=false" style="font-size:1.2rem;padding:0.5rem 1rem;min-width:50px;">⬅️</button>
-<button class="btn btn-secondary" onmousedown="ks['arrowright']=true" onmouseup="ks['arrowright']=false" ontouchstart="ks['arrowright']=true;event.preventDefault()" ontouchend="ks['arrowright']=false" style="font-size:1.2rem;padding:0.5rem 1rem;min-width:50px;">➡️</button>
-<button class="btn btn-primary" onmousedown="ks['arrowup']=true" onmouseup="ks['arrowup']=false" ontouchstart="ks['arrowup']=true;event.preventDefault()" ontouchend="ks['arrowup']=false" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬆️跳</button>
-<button class="btn btn-accent" onmousedown="md=true" onmouseup="md=false" ontouchstart="md=true;event.preventDefault()" ontouchend="md=false" style="font-size:1.2rem;padding:0.5rem 1.5rem;">🔫射击</button>
+<button class="btn btn-secondary" onmousedown="G.left(true)" onmouseup="G.left(false)" ontouchstart="G.left(true);event.preventDefault()" ontouchend="G.left(false)" style="font-size:1.2rem;padding:0.5rem 1rem;min-width:50px;">⬅️</button>
+<button class="btn btn-secondary" onmousedown="G.right(true)" onmouseup="G.right(false)" ontouchstart="G.right(true);event.preventDefault()" ontouchend="G.right(false)" style="font-size:1.2rem;padding:0.5rem 1rem;min-width:50px;">➡️</button>
+<button class="btn btn-primary" onmousedown="G.jump()" ontouchstart="G.jump();event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬆️跳</button>
+<button class="btn btn-accent" onmousedown="G.fire(true)" onmouseup="G.fire(false)" ontouchstart="G.fire(true);event.preventDefault()" ontouchend="G.fire(false)" style="font-size:1.2rem;padding:0.5rem 1.5rem;">🔫射击</button>
 <button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️</button>
 <a href="game.html" class="btn btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🚪</a>
 </div>
@@ -199,7 +199,10 @@ function draw(){
 }
 
 function rst(){pl.x=100;pl.py=G-18;pl.vy=0;pl.og=true;pl.jm=0;camX=0;ens=[];blt=[];par=[];pup=[];obs=[];sc=0;hp=5;kl=0;dst=0;go=true;pa=false;wlv=1;wtp='normal';ammo=mxa;rld=0;scd=0;ucd=0;inv=0;spT=0;document.querySelectorAll('.ov').forEach(e=>e.remove());updH();}
-window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
+window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;},
+  left:v=>{ks['arrowleft']=v;},right:v=>{ks['arrowright']=v;},
+  jump:()=>{if(pl.jm<pl.jmx){pl.vy=-11;pl.jm++;pl.og=false;}},
+  fire:v=>{md=v;}};
 
 function loop(){upd();draw();requestAnimationFrame(loop);}
 rst();loop();
