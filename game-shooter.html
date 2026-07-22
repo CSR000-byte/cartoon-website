@@ -18,7 +18,7 @@
 </div></header>
 <main><section class="page-container" style="text-align:center;">
 <h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">🛸 星际防卫战</h2>
-<p style="color:var(--text-secondary);margin-bottom:0.5rem;">←→移动(背景滚动) ↑跳跃 ↓蹲下 🖱️瞄准射击 Q技能 P暂停 M静音</p>
+<p style="color:var(--text-secondary);margin-bottom:0.5rem;">🏃自动前进 | ←→移动 | ↑跳跃 | ↓蹲下 | 🖱️瞄准射击 | Q技能 | P暂停 | M静音</p>
 <div class="hud"><span>⭐<b id="s">0</b></span><span>❤️<b id="h">5</b></span><span>🔫<b id="w">Lv1</b></span><span>💀<b id="k">0</b></span><span>📏<b id="d">0m</b></span></div>
 <canvas id="gc" width="900" height="460"></canvas>
 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
@@ -105,7 +105,8 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 function upd(){
   if(!go||pa)return;
-  // 移动(背景跟随)
+  // 自动向前+手动移动
+  pl.x+=2.5;dst+=0.4;
   const spd=4;
   if(ks['a']||ks['arrowleft']){pl.x-=spd;pl.f=-1;}
   if(ks['d']||ks['arrowright']){pl.x+=spd;pl.f=1;}
@@ -125,13 +126,13 @@ function upd(){
   blt.forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.hm&&b.tg){const a=Math.atan2(b.tg.y-b.y,b.tg.x-b.x);b.vx+=Math.cos(a)*0.2;b.vy+=Math.sin(a)*0.2;const s=Math.hypot(b.vx,b.vy);b.vx=b.vx/s*8;b.vy=b.vy/s*8;}});
   blt=blt.filter(b=>Math.abs(b.x-pl.x)<W&&Math.abs(b.y-pl.py)<H);
 
-  spT++;if(spT>Math.max(50-dst*0.1,15)){spT=0;const r=Math.random();
-    if(dst>2000&&!ens.some(e=>e.isB)&&Math.random()<0.06+dst*0.004)spE('b');
-    else if(r<0.3)spE('g');else if(r<0.55)spE('s');else if(r<0.75)spE('j');else if(r<0.9)spE('t');else spE('f');
-    if(Math.random()<0.35)spO();}
+  spT++;if(spT>Math.max(70-dst*0.05,25)){spT=0;const r=Math.random();
+    if(dst>3000&&!ens.some(e=>e.isB)&&Math.random()<0.03+dst*0.002)spE('b');
+    else if(r<0.35)spE('g');else if(r<0.6)spE('s');else if(r<0.8)spE('j');else spE('t');
+    if(Math.random()<0.5)spO();}
   if(Math.random()<0.004)pup.push({x:pl.x+(Math.random()-0.5)*W,y:G-30-Math.random()*170,tp:['spread','laser','homing','heal','ammo'][Math.floor(Math.random()*5)],l:350});
 
-  ens.forEach(e=>{const dx=pl.x-e.x;e.vx=(dx>0?0.6:-0.3)*e.sp;if(e.jp&&e.og&&Math.random()<0.02&&Math.abs(dx)<250){e.vy=-7;e.og=false;}if(e.fly){e.y+=Math.sin(Date.now()*0.003+e.st)*0.8;e.st+=0.02;}else{e.vy+=0.4;e.y+=e.vy;if(e.y+e.sz>=G){e.y=G-e.sz;e.vy=0;e.og=true;}}e.x+=e.vx;if(e.sh&&e.st<=0&&Math.abs(dx)<W){e.st=e.scd;const a2=Math.atan2(pl.py-e.y,pl.x-e.x);blt.push({x:e.x,y:e.y,vx:Math.cos(a2)*3.5,vy:Math.sin(a2)*3.5,dmg:1,c:'#FA0',r:3,eb:true});if(e.isB)for(let i=-1;i<=1;i++)blt.push({x:e.x,y:e.y+i*10,vx:-3,vy:i*0.7,dmg:1,c:'#F00',r:2.5,eb:true});}if(e.st>0)e.st--;});
+  ens.forEach(e=>{const dx=pl.x-e.x;e.vx=(dx>0?0.6:-0.3)*e.sp;if(e.jp&&e.og&&Math.random()<0.02&&Math.abs(dx)<250){e.vy=-7;e.og=false;}if(e.fly){e.y+=Math.sin(Date.now()*0.003+e.st)*0.8;e.st+=0.02;}else{e.vy+=0.4;e.y+=e.vy;if(e.y+e.sz>=G){e.y=G-e.sz;e.vy=0;e.og=true;}}e.x+=e.vx;if(e.sh&&e.st<=0&&Math.abs(dx)<W){e.st=e.scd;const a2=Math.atan2(pl.py-e.y,pl.x-e.x);blt.push({x:e.x,y:e.y,vx:Math.cos(a2)*2.2,vy:Math.sin(a2)*2.2,dmg:0.5,c:'#FA0',r:2.5,eb:true});if(e.isB)for(let i=-1;i<=1;i++)blt.push({x:e.x,y:e.y+i*8,vx:-2,vy:i*0.5,dmg:0.5,c:'#F00',r:2,eb:true});}if(e.st>0)e.st--;});
   ens=ens.filter(e=>Math.abs(e.x-pl.x)<W*2);
 
   obs.forEach(o=>o.x-=0.5);obs=obs.filter(o=>Math.abs(o.x-pl.x)<W);
