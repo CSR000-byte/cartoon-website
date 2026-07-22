@@ -18,7 +18,7 @@
 </div></header>
 <main><section class="page-container" style="text-align:center;">
 <h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">🛸 星际防卫战</h2>
-<p style="color:var(--text-secondary);margin-bottom:0.5rem;">🏃自动前进 | ←→移动 | ↑跳跃 | ↓蹲下 | 🖱️瞄准射击 | Q技能 | P暂停 | M静音</p>
+<p style="color:var(--text-secondary);margin-bottom:0.5rem;">🏃自动前进 | ←→移动 | ↑跳跃 | ↓蹲下 | <b>空格/🖱️射击</b> | Q技能 | <b>R半屏激光</b> | P暂停 | M静音</p>
 <div class="hud"><span>⭐<b id="s">0</b></span><span>❤️<b id="h">5</b></span><span>🔫<b id="w">Lv1</b></span><span>💀<b id="k">0</b></span><span>📏<b id="d">0m</b></span></div>
 <canvas id="gc" width="900" height="460"></canvas>
 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
@@ -42,7 +42,7 @@ const cv=document.getElementById('gc'),ctx=cv.getContext('2d');
 const W=cv.width,H=cv.height,G=H-45,WORLD=W*8;
 let pl,sc=0,hp=5,kl=0,dst=0,go=true,pa=false,camX=0;
 let ens=[],blt=[],par=[],pup=[],obs=[];
-let wlv=1,wtp='normal',wt=0,ammo=25,mxa=25,rld=0,scd=0,ucd=0,inv=0,sht=0;
+let wlv=1,wtp='normal',wt=0,ammo=25,mxa=25,rld=0,scd=0,ucd=0,inv=0,sht=0,bigLaserCD=0,bigLaserT=0;
 let mx=W/2,my=H/2,md=false,spT=0;
 let bgM=[],bgC=[],bgS=[],gd=[];
 
@@ -80,9 +80,10 @@ function drawHero(px,py,f,cr){
 const ET={g:{hp:1,sc:10,sp:1.5,sz:16,d(x,y){const t=Date.now()*0.006;ctx.fillStyle='#7CFC00';ctx.beginPath();ctx.ellipse(x,y-1,9,6,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#F00';ctx.beginPath();ctx.arc(x+2,y-2,4,0,Math.PI*2);ctx.fill();for(let i=0;i<4;i++){const a=i*Math.PI/2+t;ctx.fillStyle='#555';ctx.beginPath();ctx.arc(x+Math.cos(a)*6,y+Math.sin(a)*2.5,1.5,0,Math.PI*2);ctx.fill();}}},s:{hp:2,sc:20,sp:1,sz:18,sh:true,scd:85,d(x,y){ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill();ctx.fillStyle='#F00';ctx.beginPath();ctx.arc(x+2,y-2,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#000';ctx.fillRect(x+7,y-2,6,2);}},j:{hp:2,sc:15,sp:2,sz:14,jp:true,d(x,y){ctx.fillStyle='#FF69B4';ctx.beginPath();ctx.arc(x,y-2,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='#000';ctx.beginPath();ctx.arc(x+2,y-3,2,0,Math.PI*2);ctx.fill();}},t:{hp:5,sc:40,sp:0.8,sz:26,sh:true,scd:100,d(x,y){ctx.fillStyle='#8B0000';ctx.beginPath();ctx.roundRect(x-12,y-10,24,20,7);ctx.fill();ctx.fillStyle='#F44';ctx.beginPath();ctx.arc(x+6,y-2,5,0,Math.PI*2);ctx.fill();}},f:{hp:3,sc:30,sp:1.2,sz:16,fly:true,sh:true,scd:75,d(x,y){const t=Date.now()*0.012;ctx.fillStyle='#9370DB';ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(200,180,255,0.4)';ctx.beginPath();ctx.ellipse(x-7,y-1,6,3,0.4+Math.sin(t)*0.2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(x+7,y-1,6,3,-0.4-Math.sin(t)*0.2,0,Math.PI*2);ctx.fill();}},b:{hp:30,sc:300,sp:0.4,sz:44,sh:true,scd:28,isB:true,d(x,y){const t=Date.now()*0.003;ctx.fillStyle='#4A0000';ctx.beginPath();ctx.ellipse(x,y-6,24,15,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8B0000';ctx.beginPath();ctx.arc(x,y-8,13,0,Math.PI*2);ctx.fill();ctx.fillStyle='#FF0';ctx.beginPath();ctx.arc(x,y-8,6,0,Math.PI*2);ctx.fill();for(let i=0;i<6;i++){const a=i*Math.PI/3+t;ctx.fillStyle='#600';ctx.beginPath();ctx.arc(x+Math.cos(a)*21,y-6+Math.sin(a)*9,3.5,0,Math.PI*2);ctx.fill();}}}};
 
 function spE(tp){const e=ET[tp];ens.push({...e,tp,x:pl.x+W+40+Math.random()*250,y:e.fly?50+Math.random()*160:G-e.sz,hp:e.hp+Math.floor(dst/400),mx:e.hp+Math.floor(dst/400),vx:0,vy:0,og:false,st:0});}
-function spO(){obs.push({x:pl.x+W+50+Math.random()*150,y:G-30-Math.random()*50,w:18+Math.random()*25,h:25+Math.random()*50});}
-// 初始障碍物
-for(let i=0;i<3;i++)spO();
+function spO(){obs.push({x:pl.x+W+50+Math.random()*150,y:G-25-Math.random()*40,w:16+Math.random()*22,h:22+Math.random()*45});}
+// 初始障碍物+定期新增
+for(let i=0;i<5;i++)spO();
+let obsTimer=0;
 function spP(x,y,c,n){for(let i=0;i<n;i++)par.push({x,y,vx:(Math.random()-0.5)*7,vy:(Math.random()-0.5)*5-2,l:8+Math.random()*15,c,r:Math.random()*2.5+2});}
 function hurt(d){if(inv>0||!go)return;hp-=d;inv=30;spP(pl.x,pl.py,'#F66',15);if(hp<=0){go=false;spP(pl.x,pl.py,'#FD0',40);setTimeout(()=>{document.body.insertAdjacentHTML('beforeend','<div class="ov" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:1000;" onclick="this.remove();G.restart()"><div style="background:var(--bg-dark);border:2px solid var(--color-primary);border-radius:var(--radius-xl);padding:2rem;text-align:center;"><div style="font-size:4rem;">💥</div><h2>倒下了!</h2><div style="font-size:3rem;color:var(--color-accent-yellow);">⭐'+sc+'</div><p>击杀:'+kl+' | '+Math.floor(dst)+'m</p><button class="btn btn-primary">🔄再来</button></div></div>');},600);}}
 
@@ -97,10 +98,18 @@ function shoot(){
 
 function useS(){if(scd>0||!go||pa)return;scd=160;ens.forEach(e=>{if(Math.abs(e.x-pl.x)<100&&Math.abs(e.y-pl.py)<70){e.hp-=3;e.vx-=8;spP(e.x,e.y,'#FFF',8);}});spP(pl.x,pl.py,'#FFF',14);}
 function useU(){if(ucd>0||!go||pa)return;ucd=480;ens.forEach(e=>{if(Math.abs(e.x-pl.x)<W){e.hp-=5;spP(e.x,e.y,'#FD0',6);}});spP(pl.x,pl.py,'#FD0',30);}
+// 半屏激光(20秒CD)
+function bigLaser(){
+  if(bigLaserCD>0||!go||pa)return;
+  bigLaserCD=1200;bigLaserT=25;
+  const bx=pl.x,by=pl.py-15;
+  for(let i=0;i<20;i++){blt.push({x:bx+i*W/20,y:by,vx:12,vy:0,dmg:8,c:'#0FF',r:5,pen:true});blt.push({x:bx+i*W/20,y:by-6,vx:12,vy:0,dmg:8,c:'#0FF',r:4,pen:true});blt.push({x:bx+i*W/20,y:by+6,vx:12,vy:0,dmg:8,c:'#0FF',r:4,pen:true});}
+  spP(pl.x,pl.py,'#0FF',30);
+}
 
 const ks={};
-window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='p'){pa=!pa;return;}if(!go||pa)return;ks[k]=true;if((k==='w'||k==='arrowup'||k===' ')&&pl.jm<pl.jmx){pl.vy=-11;pl.jm++;pl.og=false;}if(k==='q')useS();if(k==='e')useU();if(k==='r'&&!rld)rld=15;e.preventDefault();});
-window.addEventListener('keyup',e=>{ks[e.key.toLowerCase()]=false;});
+window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='p'){pa=!pa;return;}if(!go||pa)return;ks[k]=true;if((k==='w'||k==='arrowup')&&pl.jm<pl.jmx){pl.vy=-11;pl.jm++;pl.og=false;}if(k===' '){md=true;}if(k==='q')useS();if(k==='e')useU();if(k==='r')bigLaser();e.preventDefault();});
+window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k===' ')md=false;ks[k]=false;});
 cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});
 cv.addEventListener('mousedown',()=>{md=true;});cv.addEventListener('mouseup',()=>{md=false;});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
@@ -124,6 +133,9 @@ function upd(){
   sht++;if(md&&sht>=6){shoot();sht=0;}
   if(rld>0){rld--;if(rld<=0)ammo=mxa;}
   if(scd>0)scd--;if(ucd>0)ucd--;if(inv>0)inv--;if(wt>0){wt--;if(wt<=0){wtp='normal';wlv=1;}}
+  if(bigLaserCD>0)bigLaserCD--;if(bigLaserT>0)bigLaserT--;
+  // 障碍物定时补充
+  obsTimer++;if(obsTimer>300&&obs.length<8){obsTimer=0;spO();}
 
   blt.forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.hm&&b.tg){const a=Math.atan2(b.tg.y-b.y,b.tg.x-b.x);b.vx+=Math.cos(a)*0.2;b.vy+=Math.sin(a)*0.2;const s=Math.hypot(b.vx,b.vy);b.vx=b.vx/s*8;b.vy=b.vy/s*8;}});
   blt=blt.filter(b=>Math.abs(b.x-pl.x)<W&&Math.abs(b.y-pl.py)<H);
@@ -148,7 +160,8 @@ function upd(){
   pup=pup.filter(p=>p.l-->0);par.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.l--;});par=par.filter(p=>p.l>0);
   updH();}
 
-function updH(){document.getElementById('s').textContent=sc;document.getElementById('h').textContent=hp;document.getElementById('w').textContent={normal:'🔮激光Lv'+wlv,spread:'💥散弹Lv'+wlv,laser:'⚡超级激光',homing:'🎯追踪Lv'+wlv}[wtp];document.getElementById('k').textContent=kl;document.getElementById('d').textContent=Math.floor(dst)+'m';}
+function updH(){document.getElementById('s').textContent=sc;document.getElementById('h').textContent=hp;document.getElementById('w').textContent={normal:'🔮激光Lv'+wlv,spread:'💥散弹Lv'+wlv,laser:'⚡超激',homing:'🎯追踪Lv'+wlv}[wtp];document.getElementById('k').textContent=kl;document.getElementById('d').textContent=Math.floor(dst)+'m';
+document.getElementById('w').textContent+=' R:'+(bigLaserCD>0?Math.ceil(bigLaserCD/60)+'s':'⚡就绪');}
 
 function draw(){
   ctx.clearRect(0,0,W,H);
@@ -176,6 +189,8 @@ function draw(){
   if(inv<=0||Math.floor(Date.now()/60)%2===0)drawHero(px,py,pl.f,pl.cr);
   par.forEach(p=>{const pp=p.x-camX;ctx.globalAlpha=p.l/18;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(pp,p.y,p.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
   if(rld>0){ctx.fillStyle='#FFF';ctx.font='bold 14px Quicksand';ctx.textAlign='center';ctx.fillText('🔄',px,py-30);}
+  // 半屏激光特效
+  if(bigLaserT>0){ctx.fillStyle='rgba(0,255,255,0.15)';ctx.fillRect(0,pl.py-30,W,40);ctx.strokeStyle='#0FF';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,pl.py-10);ctx.lineTo(W,pl.py-10);ctx.stroke();}
   if(pa){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️暂停',W/2,H/2);}
   ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(mx,my,14,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(mx-20,my);ctx.lineTo(mx-6,my);ctx.moveTo(mx+6,my);ctx.lineTo(mx+20,my);ctx.moveTo(mx,my-20);ctx.lineTo(mx,my-6);ctx.moveTo(mx,my+6);ctx.lineTo(mx,my+20);ctx.stroke();
 }
