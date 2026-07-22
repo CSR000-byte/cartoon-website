@@ -21,10 +21,12 @@
 <p style="color:var(--text-secondary);margin-bottom:0.5rem;">⬆️⬇️移动飞船躲避陨石！队友建议仅供参考！P暂停 M静音</p>
 <div class="hud"><span>⏱️<b id="t">0.0s</b></span><span>🏆<b id="b">0.0s</b></span></div>
 <canvas id="gc" width="700" height="500"></canvas>
-<div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
-<button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️暂停</button>
-<button class="btn btn-secondary" onclick="G.restart()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🔄重来</button>
-<a href="game.html" class="btn btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🚪退出</a>
+<div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
+<button class="btn btn-secondary" onmousedown="sy-=20" onmouseup="" ontouchstart="sy-=20;event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬆️上</button>
+<button class="btn btn-secondary" onmousedown="sy+=20" onmouseup="" ontouchstart="sy+=20;event.preventDefault()" style="font-size:1.2rem;padding:0.5rem 1.5rem;">⬇️下</button>
+<button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️</button>
+<button class="btn btn-secondary" onclick="G.restart()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🔄</button>
+<a href="game.html" class="btn btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🚪</a>
 </div>
 </section></main>
 <script src="js/main.js"></script>
