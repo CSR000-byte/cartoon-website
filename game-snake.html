@@ -50,12 +50,12 @@ document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m')mo=!mo;});
 (function(){
 const cv=document.getElementById('gc'),ctx=cv.getContext('2d');
 const W=cv.width,H=cv.height,GS=20,COLS=W/GS,ROWS=H/GS;
-let snake=[],food=null,dir={x:1,y:0},nextDir={x:1,y:0},sc=0,best=parseInt(localStorage.getItem('snakeBest'))||0,go=true,pa=false,tick=0,spd=8;
+let snake=[],foods=[],dir={x:1,y:0},nextDir={x:1,y:0},sc=0,best=parseInt(localStorage.getItem('snakeBest'))||0,go=true,pa=false,tick=0,spd=8;
 
-function spFood(){let f;do{f={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)};}while(snake.some(s=>s.x===f.x&&s.y===f.y));food=f;}
+function spFood(){let f;do{f={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)};}while(snake.some(s=>s.x===f.x&&s.y===f.y)||foods.some(fd=>fd.x===f.x&&fd.y===f.y));return f;}
 function rst(){
   snake=[{x:5,y:Math.floor(ROWS/2)},{x:4,y:Math.floor(ROWS/2)},{x:3,y:Math.floor(ROWS/2)}];
-  dir={x:1,y:0};nextDir={x:1,y:0};sc=0;go=true;pa=false;tick=0;spFood();updH();
+  dir={x:1,y:0};nextDir={x:1,y:0};sc=0;go=true;pa=false;tick=0;foods=[spFood(),spFood(),spFood()];updH();
 }
 function setDir(x,y){if(dir.x===-x&&dir.y===-y)return;nextDir={x,y};}
 function updH(){document.getElementById('s').textContent=sc;document.getElementById('l').textContent=snake.length;document.getElementById('b').textContent=best;}
@@ -76,7 +76,9 @@ function upd(){
   const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
   if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)){go=false;if(sc>best){best=sc;localStorage.setItem('snakeBest',best);}updH();return;}
   snake.unshift(head);
-  if(head.x===food.x&&head.y===food.y){sc+=10;spd=Math.max(4,spd-0.3);spFood();pn(880,0.08,ac.currentTime,'square',0.06);}else{snake.pop();}
+  let ate=false;
+  for(let i=foods.length-1;i>=0;i--){if(head.x===foods[i].x&&head.y===foods[i].y){foods.splice(i,1);sc+=10;spd=Math.max(4,spd-0.3);foods.push(spFood());pn(880,0.08,ac.currentTime,'square',0.06);ate=true;break;}}
+  if(!ate)snake.pop();
   updH();
 }
 
@@ -86,8 +88,8 @@ function draw(){
   // 网格
   ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=0.5;
   for(let x=0;x<COLS;x++)for(let y=0;y<ROWS;y++)ctx.strokeRect(x*GS,y*GS,GS,GS);
-  // 食物
-  ctx.fillStyle='#FFD700';ctx.shadowColor='#FFD700';ctx.shadowBlur=8;ctx.beginPath();ctx.arc(food.x*GS+GS/2,food.y*GS+GS/2,GS/2-2,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  // 食物(多个)
+  foods.forEach(f=>{ctx.fillStyle='#FFD700';ctx.shadowColor='#FFD700';ctx.shadowBlur=8;ctx.beginPath();ctx.arc(f.x*GS+GS/2,f.y*GS+GS/2,GS/2-2,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;});
   // 蛇
   snake.forEach((s,i)=>{
     const alpha=1-i/snake.length*0.6;
