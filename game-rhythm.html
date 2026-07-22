@@ -18,12 +18,18 @@
 </div></header>
 <main><section class="page-container" style="text-align:center;">
 <h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">🎹 星际钢琴块</h2>
-<p style="color:var(--text-secondary);margin-bottom:0.5rem;">点击下落方块得分！别漏掉！P暂停 M静音</p>
+<p style="color:var(--text-secondary);margin-bottom:0.5rem;">⌨️ <b>D F J K</b> 四键控制 | 🖱️也可点击 | P暂停 M静音</p>
 <div class="hud"><span>🎯<b id="s">0</b></span><span>🔥<b id="c">x1</b></span><span>❌<b id="m">0</b></span></div>
 <canvas id="gc" width="400" height="550"></canvas>
+<div style="display:flex;gap:8px;justify-content:center;margin:6px 0;">
+<span style="display:inline-block;width:60px;height:50px;line-height:50px;background:var(--bg-card);border-radius:10px;font-size:1.5rem;text-align:center;border:2px solid #6C5CE7;">D</span>
+<span style="display:inline-block;width:60px;height:50px;line-height:50px;background:var(--bg-card);border-radius:10px;font-size:1.5rem;text-align:center;border:2px solid #FF7675;">F</span>
+<span style="display:inline-block;width:60px;height:50px;line-height:50px;background:var(--bg-card);border-radius:10px;font-size:1.5rem;text-align:center;border:2px solid #FDCB6E;">J</span>
+<span style="display:inline-block;width:60px;height:50px;line-height:50px;background:var(--bg-card);border-radius:10px;font-size:1.5rem;text-align:center;border:2px solid #00CEC9;">K</span>
+</div>
 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
+<button class="btn btn-primary" id="startBtn" onclick="G.start()" style="font-size:0.9rem;padding:0.5rem 1.5rem;">▶️ 开始游戏</button>
 <button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️暂停</button>
-<button class="btn btn-secondary" onclick="G.restart()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🔄重来</button>
 <a href="game.html" class="btn btn-secondary" style="font-size:0.75rem;padding:0.3rem 0.9rem;">🚪退出</a>
 </div>
 </section></main>
@@ -39,31 +45,35 @@ document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m')mo=!mo;});
 (function(){
 const cv=document.getElementById('gc'),ctx=cv.getContext('2d');
 const W=cv.width,H=cv.height,COLS=4,CW=W/COLS;
-let tiles=[],sc=0,combo=0,best=1,miss=0,go=true,pa=false,spd=3,spT=0;
+let tiles=[],sc=0,combo=0,best=1,miss=0,go=false,pa=false,spd=3,spT=0,started=false;
 const colors=['#6C5CE7','#FF7675','#FDCB6E','#00CEC9'];
 
-function spTile(){
-  const col=Math.floor(Math.random()*COLS);
-  tiles.push({col,x:col*CW,y:-60,w:CW-4,h:80,hit:false,c:colors[col]});
+function spTile(){const col=Math.floor(Math.random()*COLS);tiles.push({col,x:col*CW,y:-60,w:CW-4,h:80,hit:false,c:colors[col]});}
+
+function hitCol(col){
+  if(!go||pa)return;
+  let h=false;
+  for(let i=tiles.length-1;i>=0;i--){const t=tiles[i];if(!t.hit&&t.col===col&&t.y+HZ>H-60){t.hit=true;h=true;combo++;if(combo>best)best=combo;sc+=10*(1+Math.floor(combo/10));pn(parseInt(colors[col].slice(1),16),0.1,ac.currentTime,'square',0.08);break;}}
+  if(!h){combo=0;miss++;}updH();
 }
 
+// 键盘控制 D/F/J/K
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(k==='p'){pa=!pa;return;}
+  const km={d:0,f:1,j:2,k:3};if(km[k]!==undefined)hitCol(km[k]);
+});
+
+// 鼠标点击
 cv.addEventListener('click',e=>{
   if(!go||pa)return;
-  const r=cv.getBoundingClientRect();
-  const mx=e.clientX-r.left,my=e.clientY-r.top;
+  const r=cv.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;
   let h=false;
-  for(let i=tiles.length-1;i>=0;i--){
-    const t=tiles[i];
-    if(!t.hit&&mx>t.x&&mx<t.x+t.w&&my>t.y&&my<t.y+t.h){
-      t.hit=true;h=true;combo++;if(combo>best)best=combo;
-      sc+=10*(1+Math.floor(combo/10));
-      pn(colors[t.col].replace('#',''),0.1,ac.currentTime,'square',0.08);
-      break;
-    }
-  }
-  if(!h){combo=0;miss++;}
-  updH();
+  for(let i=tiles.length-1;i>=0;i--){const t=tiles[i];if(!t.hit&&mx>t.x&&mx<t.x+t.w&&my>t.y&&my<t.y+t.h){t.hit=true;h=true;combo++;if(combo>best)best=combo;sc+=10*(1+Math.floor(combo/10));pn(parseInt(colors[t.col].slice(1),16),0.1,ac.currentTime,'square',0.08);break;}}
+  if(!h){combo=0;miss++;}updH();
 });
+
+const HZ=80;
 
 function updH(){document.getElementById('s').textContent=sc;document.getElementById('c').textContent='x'+combo;document.getElementById('m').textContent=miss;}
 
@@ -82,15 +92,19 @@ function draw(){
   // 方块
   tiles.forEach(t=>{ctx.fillStyle=t.c;ctx.fillRect(t.x+2,t.y,t.w-4,t.h);ctx.fillStyle='rgba(255,255,255,0.2)';ctx.fillRect(t.x+2,t.y,t.w-4,4);});
   // 判定线
-  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,H-10);ctx.lineTo(W,H-10);ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,H-60);ctx.lineTo(W,H-60);ctx.stroke();
+  // 列标签
+  const labels=['D','F','J','K'];labels.forEach((l,i)=>{ctx.fillStyle=colors[i];ctx.font='bold 20px Quicksand';ctx.textAlign='center';ctx.fillText(l,i*CW+CW/2,H-35);});
   if(pa){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#FFF';ctx.font='bold 30px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️',W/2,H/2);}
+  if(!started){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#FFD700';ctx.font='bold 28px Fredoka One';ctx.textAlign='center';ctx.fillText('🎹 星际钢琴块',W/2,H/2-30);ctx.fillStyle='#FFF';ctx.font='16px Quicksand';ctx.fillText('按 D F J K 或点击方块',W/2,H/2+15);ctx.fillStyle='#0CC';ctx.font='bold 20px Quicksand';ctx.fillText('👆 点击"开始游戏" 👆',W/2,H/2+55);}
 }
 
-function rst(){tiles=[];sc=0;combo=0;best=1;miss=0;go=true;pa=false;spd=3;spT=0;updH();}
-window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
+function startGame(){go=true;started=true;pa=false;tiles=[];sc=0;combo=0;best=1;miss=0;spT=0;updH();document.getElementById('startBtn').textContent='🎮 游戏中...';document.getElementById('startBtn').disabled=true;}
+function rst(){tiles=[];sc=0;combo=0;best=1;miss=0;go=true;started=true;pa=false;spd=3;spT=0;updH();}
+window.G={start:startGame,restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
 
 function loop(){upd();draw();requestAnimationFrame(loop);}
-rst();loop();
+loop();
 })();
 </script>
 </body>
