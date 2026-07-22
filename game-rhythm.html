@@ -154,14 +154,14 @@ window.restart=restart;window.pauseGame=pauseGame;
     // 浮动文字
     floats.forEach(f=>{ctx.fillStyle=f.color;ctx.font='bold 18px Quicksand,sans-serif';ctx.textAlign='center';ctx.globalAlpha=f.life/40;ctx.fillText(f.text,f.x,f.y-20);});ctx.globalAlpha=1;
   }
-
-  function loop(){update();draw();requestAnimationFrame(loop);}
-  for(let i=0;i<3;i++)spawnNote();
-    if(!gameOn){
+  if(!gameOn){
     ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️ 暂停中',canvas.width/2,canvas.height/2);
   }
 }
+
+function loop(){update();draw();requestAnimationFrame(loop);}
+for(let i=0;i<3;i++)spawnNote();
 loop();
 })();
 </script>
