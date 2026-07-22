@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="卡创 · 星际小猫号 — 梦幻画廊，汇集星际小猫号的精美插画与概念艺术">
+  <meta property="og:title" content="🎨 梦幻画廊 — 卡创 · 星际小猫号">
+  <meta property="og:description" content="欣赏星际小猫号的精美画廊，每一幅都是梦幻的星际画卷！">
+  <meta property="og:image" content="assets/images/og-image.svg">
+  <meta property="og:type" content="website">
+  <title>画廊 · 🐱 星际小猫号 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ⭐ 星空画布 -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- 🧭 导航栏 -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🐱</span>
+        <span>卡创 · 星际小猫号</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">🏠 首页</a></li>
+          <li><a href="roles.html">🎭 角色</a></li>
+          <li><a href="stories.html">📚 故事</a></li>
+          <li><a href="gallery.html" class="active">🎨 画廊</a></li>
+          <li><a href="about.html">💌 关于</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 🎨 画廊页主体 -->
+  <main>
+    <section class="page-container">
+      <div class="section-header">
+        <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">🎨 卡创星际画廊</div>
+        <h1 class="section-title">✨ 梦幻星际画廊</h1>
+        <p class="section-subtitle">每一幅作品都是一扇通往梦幻星球的窗户</p>
+      </div>
+
+      <div class="gallery-grid">
+        <!-- 画廊项目 1 -->
+        <div class="gallery-item" onclick="showToast('🌈 星云棒棒糖 — 彩虹马的最爱！')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #6C5CE7, #FF7675, #FDCB6E);">🍭🌈</div>
+          <div class="gallery-caption">星云棒棒糖 🌈</div>
+        </div>
+
+        <!-- 画廊项目 2 -->
+        <div class="gallery-item tall" onclick="showToast('🐱 小星船长 — 我们的星际英雄！')">
+          <div class="gallery-image" style="background: linear-gradient(180deg, #1a1a3e, #6C5CE7, #00CEC9);">🐱🚀</div>
+          <div class="gallery-caption">小星船长 🌟</div>
+        </div>
+
+        <!-- 画廊项目 3 -->
+        <div class="gallery-item" onclick="showToast('🌙 月光猫薄荷田 — 月球背面的秘密')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #0a0a1a, #4A3DB7);">🌿🌙</div>
+          <div class="gallery-caption">月光猫薄荷田 🌿</div>
+        </div>
+
+        <!-- 画廊项目 4 -->
+        <div class="gallery-item wide" onclick="showToast('🌌 银河全景 — 星际小猫号正在穿越！')">
+          <div class="gallery-image" style="background: linear-gradient(90deg, #0a0a1a, #1a1a3e, #6C5CE7, #FF7675, #00CEC9); font-size: 3rem;">🚀✨🌌💫⭐🌟</div>
+          <div class="gallery-caption">银河穿越全景 🌌</div>
+        </div>
+
+        <!-- 画廊项目 5 -->
+        <div class="gallery-item" onclick="showToast('🦊 火狐的工作台 — 奇妙发明诞生地')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #FF7675, #FDCB6E);">🔧🦊</div>
+          <div class="gallery-caption">火狐的工作台 🔧</div>
+        </div>
+
+        <!-- 画廊项目 6 -->
+        <div class="gallery-item" onclick="showToast('🍬 星星糖果铺 — 银河系最甜的地方')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #FF7675, #FDCB6E, #55EFC4);">🍬✨</div>
+          <div class="gallery-caption">星星糖果铺 🍬</div>
+        </div>
+
+        <!-- 画廊项目 7 -->
+        <div class="gallery-item tall" onclick="showToast('🐰 月兔的信号塔 — 接收来自银河的信号')">
+          <div class="gallery-image" style="background: linear-gradient(180deg, #4A3DB7, #A29BFE, #00CEC9);">🐰📡</div>
+          <div class="gallery-caption">月兔的信号塔 📡</div>
+        </div>
+
+        <!-- 画廊项目 8 -->
+        <div class="gallery-item" onclick="showToast('❄️ 冰星基地 — 企鹅船长的故乡')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #00CEC9, #55EFC4, #ffffff);">🐧❄️</div>
+          <div class="gallery-caption">冰星基地 ❄️</div>
+        </div>
+
+        <!-- 画廊项目 9 -->
+        <div class="gallery-item" onclick="showToast('🦄 彩虹马的星光魔法秀！')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #6C5CE7, #FF7675, #FDCB6E, #55EFC4);">🦄✨</div>
+          <div class="gallery-caption">星光魔法秀 🌟</div>
+        </div>
+
+        <!-- 画廊项目 10 -->
+        <div class="gallery-item wide" onclick="showToast('🐼 胖达的星空厨房 — 正在烹饪星星饼干')">
+          <div class="gallery-image" style="background: linear-gradient(90deg, #1a1a3e, #FDCB6E, #FF7675); font-size: 3rem;">🐼🍪⭐🥮🍙</div>
+          <div class="gallery-caption">胖达的星空厨房 🍪</div>
+        </div>
+
+        <!-- 画廊项目 11 -->
+        <div class="gallery-item" onclick="showToast('💫 流星雨之夜 — 许个愿吧！')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #0a0a1a, #6C5CE7);">💫🌠</div>
+          <div class="gallery-caption">流星雨之夜 💫</div>
+        </div>
+
+        <!-- 画廊项目 12 -->
+        <div class="gallery-item" onclick="showToast('🎪 星云市场 — 宇宙中最热闹的交易站')">
+          <div class="gallery-image" style="background: linear-gradient(135deg, #FF7675, #6C5CE7, #00CEC9);">🎪🌟</div>
+          <div class="gallery-caption">星云市场 🎪</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 📋 页脚 -->
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a href="#" class="social-icon" title="微博" aria-label="微博">📢</a>
+      <a href="#" class="social-icon" title="微信" aria-label="微信">💬</a>
+      <a href="#" class="social-icon" title="B站" aria-label="B站">📺</a>
+      <a href="#" class="social-icon" title="小红书" aria-label="小红书">📕</a>
+      <a href="#" class="social-icon" title="GitHub" aria-label="GitHub">🐙</a>
+    </div>
+    <p class="footer-text">
+      © 2026 <strong>卡创</strong> · 星际小猫号 🐱🚀 | 用爱发电，用心画猫 ✨
+    </p>
+  </footer>
+
+  <!-- ⬆️ 回到顶部 -->
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部" title="回到顶部">🚀</button>
+
+  <!-- 🌓 主题切换 -->
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题" title="切换亮色/暗色">🌓</button>
+
+  <!-- 🍞 Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

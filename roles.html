@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="卡创 · 星际小猫号 — 认识6位可爱星际伙伴：小星、火狐、胖达、月兔、彩虹马、企鹅船长">
+  <meta property="og:title" content="🎭 星际伙伴们 — 卡创 · 星际小猫号">
+  <meta property="og:description" content="认识星际小猫号的6位超萌角色，每位都有独特的性格和故事！">
+  <meta property="og:image" content="assets/images/og-image.svg">
+  <meta property="og:type" content="website">
+  <title>角色 · 🐱 星际小猫号 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ⭐ 星空画布 -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- 🧭 导航栏 -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🐱</span>
+        <span>卡创 · 星际小猫号</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">🏠 首页</a></li>
+          <li><a href="roles.html" class="active">🎭 角色</a></li>
+          <li><a href="stories.html">📚 故事</a></li>
+          <li><a href="gallery.html">🎨 画廊</a></li>
+          <li><a href="about.html">💌 关于</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 🎭 角色页主体 -->
+  <main>
+    <section class="page-container">
+      <div class="section-header">
+        <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">🎭 卡创星际伙伴</div>
+        <h1 class="section-title">✨ 认识星际小伙伴们</h1>
+        <p class="section-subtitle">每一位都是独一无二的星际旅行者，带着不同的梦想在银河中闪耀</p>
+      </div>
+
+      <div class="card-grid">
+        <!-- 角色 1: 小星 -->
+        <div class="card role-card" onclick="showToast('🐱 小星：星际小猫号的船长！勇敢又可爱～')">
+          <div class="role-avatar">🐱</div>
+          <h3 class="card-title">小星</h3>
+          <div class="role-tags">
+            <span class="tag tag-purple">勇敢</span>
+            <span class="tag tag-yellow">乐观</span>
+            <span class="tag tag-teal">领袖</span>
+          </div>
+          <p class="card-text">星际小猫号的船长！一只来自喵星的勇敢小猫咪，最大的梦想是探索宇宙中每一颗会发光的星球。虽然有时候会迷路，但从不放弃！🌟</p>
+        </div>
+
+        <!-- 角色 2: 火狐 -->
+        <div class="card role-card" onclick="showToast('🦊 火狐：飞船的工程师，聪明又热情！')">
+          <div class="role-avatar">🦊</div>
+          <h3 class="card-title">火狐</h3>
+          <div class="role-tags">
+            <span class="tag tag-pink">热情</span>
+            <span class="tag tag-yellow">聪明</span>
+            <span class="tag tag-purple">工程师</span>
+          </div>
+          <p class="card-text">星际小猫号的首席工程师，九条尾巴能同时操作九个控制台。热爱发明创造，最喜欢用星云碎片做小玩意儿送给大家。🔥</p>
+        </div>
+
+        <!-- 角色 3: 胖达 -->
+        <div class="card role-card" onclick="showToast('🐼 胖达：飞船的厨师长，最爱竹子味星星糖！')">
+          <div class="role-avatar">🐼</div>
+          <h3 class="card-title">胖达</h3>
+          <div class="role-tags">
+            <span class="tag tag-teal">温柔</span>
+            <span class="tag tag-yellow">美食家</span>
+            <span class="tag tag-pink">治愈</span>
+          </div>
+          <p class="card-text">星际小猫号的厨师长！虽然看起来慢悠悠的，但做的竹子味星星糖是全宇宙最好吃的。总能用美味的食物安慰旅途中疲惫的伙伴们。🍙</p>
+        </div>
+
+        <!-- 角色 4: 月兔 -->
+        <div class="card role-card" onclick="showToast('🐰 月兔：通信员兼导航员，耳朵能接收银河信号！')">
+          <div class="role-avatar">🐰</div>
+          <h3 class="card-title">月兔</h3>
+          <div class="role-tags">
+            <span class="tag tag-purple">敏捷</span>
+            <span class="tag tag-teal">聪慧</span>
+            <span class="tag tag-yellow">导航员</span>
+          </div>
+          <p class="card-text">来自月球基地的通信专家，长长的耳朵能接收到银河系最遥远的信号。负责帮大家找到正确的航线，虽然有时候会跳到奇怪的地方去…🌙</p>
+        </div>
+
+        <!-- 角色 5: 彩虹马 -->
+        <div class="card role-card" onclick="showToast('🦄 彩虹马：用星光魔法为飞船加速！')">
+          <div class="role-avatar">🦄</div>
+          <h3 class="card-title">彩虹马</h3>
+          <div class="role-tags">
+            <span class="tag tag-pink">魔法</span>
+            <span class="tag tag-purple">梦幻</span>
+            <span class="tag tag-teal">加速师</span>
+          </div>
+          <p class="card-text">拥有星光魔法的神秘独角兽，奔跑时鬃毛会洒出七彩星光。当飞船需要加速时，她会用角发射魔法光束，让小猫号瞬间穿越星云！🦄✨</p>
+        </div>
+
+        <!-- 角色 6: 企鹅船长 -->
+        <div class="card role-card" onclick="showToast('🐧 企鹅船长：副船长，冷静沉着的战术大师！')">
+          <div class="role-avatar">🐧</div>
+          <h3 class="card-title">企鹅船长</h3>
+          <div class="role-tags">
+            <span class="tag tag-teal">冷静</span>
+            <span class="tag tag-purple">战术</span>
+            <span class="tag tag-yellow">副船长</span>
+          </div>
+          <p class="card-text">来自冰星的前海军将领，任何时候都能保持冷静的判断力。是小星最信赖的副船长，负责制定战术和…在关键时刻把小星从麻烦中捞出来。🐧❄️</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 📋 页脚 -->
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a href="#" class="social-icon" title="微博" aria-label="微博">📢</a>
+      <a href="#" class="social-icon" title="微信" aria-label="微信">💬</a>
+      <a href="#" class="social-icon" title="B站" aria-label="B站">📺</a>
+      <a href="#" class="social-icon" title="小红书" aria-label="小红书">📕</a>
+      <a href="#" class="social-icon" title="GitHub" aria-label="GitHub">🐙</a>
+    </div>
+    <p class="footer-text">
+      © 2026 <strong>卡创</strong> · 星际小猫号 🐱🚀 | 用爱发电，用心画猫 ✨
+    </p>
+  </footer>
+
+  <!-- ⬆️ 回到顶部 -->
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部" title="回到顶部">🚀</button>
+
+  <!-- 🌓 主题切换 -->
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题" title="切换亮色/暗色">🌓</button>
+
+  <!-- 🍞 Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

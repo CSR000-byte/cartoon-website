@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="卡创 · 星际小猫号 — 精彩星际冒险故事：《月亮上的猫薄荷》《流星快递员》《银河钓鱼记》《星星糖果铺》">
+  <meta property="og:title" content="📚 星际冒险故事 — 卡创 · 星际小猫号">
+  <meta property="og:description" content="阅读星际小猫号的精彩冒险故事，和伙伴们一起穿越银河！">
+  <meta property="og:image" content="assets/images/og-image.svg">
+  <meta property="og:type" content="website">
+  <title>故事 · 🐱 星际小猫号 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ⭐ 星空画布 -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- 🧭 导航栏 -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🐱</span>
+        <span>卡创 · 星际小猫号</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">🏠 首页</a></li>
+          <li><a href="roles.html">🎭 角色</a></li>
+          <li><a href="stories.html" class="active">📚 故事</a></li>
+          <li><a href="gallery.html">🎨 画廊</a></li>
+          <li><a href="about.html">💌 关于</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 📚 故事页主体 -->
+  <main>
+    <section class="page-container">
+      <div class="section-header">
+        <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">📚 卡创星际故事集</div>
+        <h1 class="section-title">✨ 星际冒险故事</h1>
+        <p class="section-subtitle">每一篇故事都是一颗小星星，照亮你心中的宇宙</p>
+      </div>
+
+      <div class="card-grid">
+        <!-- 故事 1 -->
+        <div class="card story-card" onclick="showToast('📖《月亮上的猫薄荷》— 温馨治愈的月球探险故事')">
+          <div class="story-cover" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9);">🌿🐱</div>
+          <div class="story-content">
+            <h3 class="card-title">月亮上的猫薄荷</h3>
+            <div class="story-meta">
+              <span>📅 2026-07-15</span>
+              <span>⏱️ 8分钟阅读</span>
+              <span>⭐ 4.9</span>
+            </div>
+            <p class="card-text">
+              小星在月球背面发现了一片神秘的猫薄荷田。那些猫薄荷在月光下会发出银色的光芒…更神奇的是，它们似乎在唱一首古老的喵星歌谣！
+            </p>
+            <a href="#" class="btn btn-secondary" style="margin-top:1rem;font-size:0.9rem;padding:0.5rem 1.2rem;">📖 阅读更多</a>
+          </div>
+        </div>
+
+        <!-- 故事 2 -->
+        <div class="card story-card" onclick="showToast('📖《流星快递员》— 速度与友情的星际快递冒险')">
+          <div class="story-cover" style="background: linear-gradient(135deg, #FF7675, #FDCB6E);">💫📦</div>
+          <div class="story-content">
+            <h3 class="card-title">流星快递员</h3>
+            <div class="story-meta">
+              <span>📅 2026-06-28</span>
+              <span>⏱️ 10分钟阅读</span>
+              <span>⭐ 4.8</span>
+            </div>
+            <p class="card-text">
+              火狐接到了一个紧急任务：在流星雨来临之前，把一颗"愿望星"送到银河另一端的孤独星球。这次快递之旅让她收获了意想不到的友谊…
+            </p>
+            <a href="#" class="btn btn-secondary" style="margin-top:1rem;font-size:0.9rem;padding:0.5rem 1.2rem;">📖 阅读更多</a>
+          </div>
+        </div>
+
+        <!-- 故事 3 -->
+        <div class="card story-card" onclick="showToast('📖《银河钓鱼记》— 胖达的悠闲钓鱼日')">
+          <div class="story-cover" style="background: linear-gradient(135deg, #00CEC9, #55EFC4);">🎣🌌</div>
+          <div class="story-content">
+            <h3 class="card-title">银河钓鱼记</h3>
+            <div class="story-meta">
+              <span>📅 2026-06-10</span>
+              <span>⏱️ 12分钟阅读</span>
+              <span>⭐ 4.7</span>
+            </div>
+            <p class="card-text">
+              胖达拿着他用竹子做的钓竿，坐在小猫号的甲板边缘，试图从银河里钓上"星星鱼"。没想到，他真的钓上来了——一只会说话的星尘水母！
+            </p>
+            <a href="#" class="btn btn-secondary" style="margin-top:1rem;font-size:0.9rem;padding:0.5rem 1.2rem;">📖 阅读更多</a>
+          </div>
+        </div>
+
+        <!-- 故事 4 -->
+        <div class="card story-card" onclick="showToast('📖《星星糖果铺》— 银河系最甜的故事！')">
+          <div class="story-cover" style="background: linear-gradient(135deg, #FDCB6E, #FF7675);">🍬⭐</div>
+          <div class="story-content">
+            <h3 class="card-title">星星糖果铺</h3>
+            <div class="story-meta">
+              <span>📅 2026-05-20</span>
+              <span>⏱️ 6分钟阅读</span>
+              <span>⭐ 5.0</span>
+            </div>
+            <p class="card-text">
+              彩虹马在星云市场开了一家小小的糖果铺。她用星光魔法制作各种神奇糖果——吃下蓝色糖果可以飘浮，吃下粉色糖果可以让头发变成彩虹色！
+            </p>
+            <a href="#" class="btn btn-secondary" style="margin-top:1rem;font-size:0.9rem;padding:0.5rem 1.2rem;">📖 阅读更多</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 📋 页脚 -->
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a href="#" class="social-icon" title="微博" aria-label="微博">📢</a>
+      <a href="#" class="social-icon" title="微信" aria-label="微信">💬</a>
+      <a href="#" class="social-icon" title="B站" aria-label="B站">📺</a>
+      <a href="#" class="social-icon" title="小红书" aria-label="小红书">📕</a>
+      <a href="#" class="social-icon" title="GitHub" aria-label="GitHub">🐙</a>
+    </div>
+    <p class="footer-text">
+      © 2026 <strong>卡创</strong> · 星际小猫号 🐱🚀 | 用爱发电，用心画猫 ✨
+    </p>
+  </footer>
+
+  <!-- ⬆️ 回到顶部 -->
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部" title="回到顶部">🚀</button>
+
+  <!-- 🌓 主题切换 -->
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题" title="切换亮色/暗色">🌓</button>
+
+  <!-- 🍞 Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="卡创 · 星际小猫号 — 关于我们，了解星际小猫号的创作理念与幕后团队">
+  <meta property="og:title" content="💌 关于我们 — 卡创 · 星际小猫号">
+  <meta property="og:description" content="了解星际小猫号背后的故事、创作理念和可爱的虚拟团队！">
+  <meta property="og:image" content="assets/images/og-image.svg">
+  <meta property="og:type" content="website">
+  <title>关于 · 🐱 星际小猫号 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ⭐ 星空画布 -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- 🧭 导航栏 -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🐱</span>
+        <span>卡创 · 星际小猫号</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">🏠 首页</a></li>
+          <li><a href="roles.html">🎭 角色</a></li>
+          <li><a href="stories.html">📚 故事</a></li>
+          <li><a href="gallery.html">🎨 画廊</a></li>
+          <li><a href="about.html" class="active">💌 关于</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 💌 关于页主体 -->
+  <main>
+    <section class="page-container">
+      <div class="section-header">
+        <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">💌 卡创品牌故事</div>
+        <h1 class="section-title">✨ 关于星际小猫号</h1>
+        <p class="section-subtitle">一个小小的梦想，在银河中闪闪发光</p>
+      </div>
+
+      <!-- 网站简介 -->
+      <div class="about-section">
+        <div class="about-text">
+          <p style="margin-bottom:1.5rem;">
+            🐱🚀 <strong>卡创 · 星际小猫号</strong> 是一封写给所有童心未泯之人的情书。
+          </p>
+          <p style="margin-bottom:1.5rem;">
+            我们相信，在浩瀚宇宙的某个角落，有一艘小小的飞船，载着一群可爱的星际小动物，穿越星云、拜访星球、收集星光。这个世界的诞生源于一个简单的想法：<em>用最柔软的方式，治愈每一个疲惫的心灵</em>。
+          </p>
+          <p style="margin-bottom:1.5rem;">
+            卡创是一个专注于卡通创意内容的品牌，致力于创造温暖、治愈、充满想象力的卡通世界。无论是大朋友还是小朋友，我们都希望你能在这里找到一丝快乐和慰藉。
+          </p>
+          <p>
+            🌟 <strong>我们的理念：</strong>真诚、可爱、想象力无边！每一颗星星都值得被温柔对待，每一个故事都值得被用心讲述。
+          </p>
+        </div>
+      </div>
+
+      <!-- 创作理念 -->
+      <div class="section-header" style="margin-top:2rem;">
+        <h2 class="section-title">💡 创作理念</h2>
+        <p class="section-subtitle">四大核心价值观</p>
+      </div>
+
+      <div class="card-grid" style="margin-bottom:3rem;">
+        <div class="card feature-card">
+          <span class="card-icon">💖</span>
+          <h3 class="card-title">治愈第一</h3>
+          <p class="card-text">在压力和焦虑无处不在的时代，我们想打造一个安全、温暖的精神角落。</p>
+        </div>
+        <div class="card feature-card">
+          <span class="card-icon">🌈</span>
+          <h3 class="card-title">想象力无边</h3>
+          <p class="card-text">不受现实框架束缚，在太空中创造无限可能的奇妙世界。</p>
+        </div>
+        <div class="card feature-card">
+          <span class="card-icon">🤝</span>
+          <h3 class="card-title">真诚连接</h3>
+          <p class="card-text">用真诚的故事和角色，搭建创作者与读者之间的情感桥梁。</p>
+        </div>
+        <div class="card feature-card">
+          <span class="card-icon">🎨</span>
+          <h3 class="card-title">视觉之美</h3>
+          <p class="card-text">追求梦幻可爱的视觉风格，让每一帧都像一颗甜甜的星星糖果。</p>
+        </div>
+      </div>
+
+      <!-- 虚拟团队 -->
+      <div class="section-header" style="margin-top:2rem;">
+        <h2 class="section-title">👥 卡创虚拟团队</h2>
+        <p class="section-subtitle">一群热爱猫咪和星星的创作者们</p>
+      </div>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">🐱</div>
+          <h3 class="team-name">小喵</h3>
+          <div class="team-role">🎨 首席插画师</div>
+          <p class="team-bio">负责星际小猫号所有角色的设计和插图绘制。最喜欢画毛茸茸的小动物和闪闪发光的星星。</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">🦊</div>
+          <h3 class="team-name">阿狸</h3>
+          <div class="team-role">✍️ 故事作者</div>
+          <p class="team-bio">星际小猫号所有故事的创作者。脑子里装满了奇妙的星际冒险点子，随时准备把它们写下来。</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">🐼</div>
+          <h3 class="team-name">滚滚</h3>
+          <div class="team-role">💻 前端开发者</div>
+          <p class="team-bio">把这颗梦幻星球变成真实可访问的网站。热爱 CSS 动画和交互设计。</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">🐰</div>
+          <h3 class="team-name">团团</h3>
+          <div class="team-role">📱 社交媒体运营</div>
+          <p class="team-bio">负责让更多人知道星际小猫号的存在，在各个星球（平台）上传播可爱能量。</p>
+        </div>
+      </div>
+
+      <!-- 联系表单 -->
+      <div class="section-header" style="margin-top:3rem;">
+        <h2 class="section-title">💌 联系我们</h2>
+        <p class="section-subtitle">有什么想对我们说的吗？星际信号永远向你敞开</p>
+      </div>
+
+      <form class="contact-form" onsubmit="handleContactSubmit(event)">
+        <div class="form-group">
+          <label for="name">🌟 你的名字</label>
+          <input type="text" id="name" name="name" placeholder="请输入你的名字…" required>
+        </div>
+        <div class="form-group">
+          <label for="email">📧 星际邮箱</label>
+          <input type="email" id="email" name="email" placeholder="请输入你的邮箱地址…" required>
+        </div>
+        <div class="form-group">
+          <label for="subject">💬 主题</label>
+          <input type="text" id="subject" name="subject" placeholder="你想聊什么？" required>
+        </div>
+        <div class="form-group">
+          <label for="message">✍️ 留言内容</label>
+          <textarea id="message" name="message" placeholder="写下你想说的话吧…✨" required></textarea>
+        </div>
+        <div style="text-align:center;">
+          <button type="submit" class="btn btn-primary" style="font-size:1.1rem;padding:1rem 3rem;">
+            🚀 发送星际信号
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- 📋 页脚 -->
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a href="#" class="social-icon" title="微博" aria-label="微博">📢</a>
+      <a href="#" class="social-icon" title="微信" aria-label="微信">💬</a>
+      <a href="#" class="social-icon" title="B站" aria-label="B站">📺</a>
+      <a href="#" class="social-icon" title="小红书" aria-label="小红书">📕</a>
+      <a href="#" class="social-icon" title="GitHub" aria-label="GitHub">🐙</a>
+    </div>
+    <p class="footer-text">
+      © 2026 <strong>卡创</strong> · 星际小猫号 🐱🚀 | 用爱发电，用心画猫 ✨
+    </p>
+  </footer>
+
+  <!-- ⬆️ 回到顶部 -->
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部" title="回到顶部">🚀</button>
+
+  <!-- 🌓 主题切换 -->
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题" title="切换亮色/暗色">🌓</button>
+
+  <!-- 🍞 Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

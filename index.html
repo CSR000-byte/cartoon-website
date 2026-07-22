@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="卡创 · 星际小猫号 — 梦幻太空猫咪主题品牌形象网站，探索可爱治愈的星际冒险世界">
+  <meta property="og:title" content="🐱 星际小猫号 · 出发！ — 卡创">
+  <meta property="og:description" content="加入我们的星际冒险，和太空小猫一起探索梦幻宇宙！">
+  <meta property="og:image" content="assets/images/og-image.svg">
+  <meta property="og:type" content="website">
+  <title>首页 · 🐱 星际小猫号 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ⭐ 星空画布 -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- 🧭 导航栏 -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🐱</span>
+        <span>卡创 · 星际小猫号</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html" class="active">🏠 首页</a></li>
+          <li><a href="roles.html">🎭 角色</a></li>
+          <li><a href="stories.html">📚 故事</a></li>
+          <li><a href="gallery.html">🎨 画廊</a></li>
+          <li><a href="about.html">💌 关于</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 🦸 英雄区 -->
+  <main>
+    <section class="hero">
+      <div class="hero-badge">🚀 卡创星际品牌</div>
+      <h1 class="hero-title">
+        🐱 星际小猫号<br>
+        <span class="highlight">出发！</span>
+      </h1>
+      <p class="hero-subtitle">
+        和勇敢的太空小猫一起穿越银河，探索梦幻星球，收集星光糖果，开启属于你的星际冒险之旅！🌌✨
+      </p>
+      <div class="hero-cta">
+        <a href="roles.html" class="btn btn-primary">🎭 认识伙伴们</a>
+        <a href="stories.html" class="btn btn-secondary">📚 阅读冒险故事</a>
+      </div>
+    </section>
+
+    <!-- 🌟 核心特色 -->
+    <section class="page-container">
+      <div class="section-header">
+        <h2 class="section-title">✨ 卡创 · 星际特色</h2>
+        <p class="section-subtitle">每一颗星星都藏着一个可爱的秘密，等你来发现</p>
+      </div>
+      <div class="card-grid">
+        <!-- 特色 1 -->
+        <div class="card feature-card" onclick="showToast('🐱 可爱角色等你来认识！')">
+          <span class="card-icon">🐱</span>
+          <h3 class="card-title">萌趣角色</h3>
+          <p class="card-text">6位独一无二的星际小伙伴，每个都有超萌外表和温暖故事，快来和他们做朋友吧！</p>
+        </div>
+        <!-- 特色 2 -->
+        <div class="card feature-card" onclick="showToast('📚 精彩故事正在连载中！')">
+          <span class="card-icon">📚</span>
+          <h3 class="card-title">星际故事</h3>
+          <p class="card-text">从月亮上的猫薄荷到银河钓鱼记，每个故事都充满想象力和治愈力量。</p>
+        </div>
+        <!-- 特色 3 -->
+        <div class="card feature-card" onclick="showToast('🎨 画廊持续更新中！')">
+          <span class="card-icon">🎨</span>
+          <h3 class="card-title">梦幻画廊</h3>
+          <p class="card-text">汇集星际小猫号的精美插画与概念设计，每一幅都是用心绘制的梦幻世界。</p>
+        </div>
+        <!-- 特色 4 -->
+        <div class="card feature-card" onclick="showToast('💖 感谢你来到卡创！')">
+          <span class="card-icon">💖</span>
+          <h3 class="card-title">治愈之旅</h3>
+          <p class="card-text">在忙碌的生活中，来这里喘口气吧。让星际小猫们带你进入温柔治愈的太空梦境。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 📋 页脚 -->
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a href="#" class="social-icon" title="微博" aria-label="微博">📢</a>
+      <a href="#" class="social-icon" title="微信" aria-label="微信">💬</a>
+      <a href="#" class="social-icon" title="B站" aria-label="B站">📺</a>
+      <a href="#" class="social-icon" title="小红书" aria-label="小红书">📕</a>
+      <a href="#" class="social-icon" title="GitHub" aria-label="GitHub">🐙</a>
+    </div>
+    <p class="footer-text">
+      © 2026 <strong>卡创</strong> · 星际小猫号 🐱🚀 | 用爱发电，用心画猫 ✨<br>
+      <small>Made with 💜 & stardust</small>
+    </p>
+  </footer>
+
+  <!-- ⬆️ 回到顶部 -->
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部" title="回到顶部">🚀</button>
+
+  <!-- 🌓 主题切换 -->
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题" title="切换亮色/暗色">🌓</button>
+
+  <!-- 🍞 Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
