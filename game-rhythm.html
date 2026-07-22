@@ -24,10 +24,10 @@
 <div class="hud"><span>🎯<b id="s">0</b></span><span>🔥<b id="c">x1</b></span><span>❌<b id="m">0</b></span></div>
 <canvas id="gc" width="700" height="460"></canvas>
 <div style="margin:0.5rem 0;">
-<span class="lane" id="ld">⬅️<div style="font-size:0.7rem;">D</div></span>
-<span class="lane" id="lf">⬇️<div style="font-size:0.7rem;">F</div></span>
-<span class="lane" id="lj">⬆️<div style="font-size:0.7rem;">J</div></span>
-<span class="lane" id="lk">➡️<div style="font-size:0.7rem;">K</div></span>
+<span class="lane" id="ld" onclick="G.hit(0)">⬅️<div style="font-size:0.7rem;">D</div></span>
+<span class="lane" id="lf" onclick="G.hit(1)">⬇️<div style="font-size:0.7rem;">F</div></span>
+<span class="lane" id="lj" onclick="G.hit(2)">⬆️<div style="font-size:0.7rem;">J</div></span>
+<span class="lane" id="lk" onclick="G.hit(3)">➡️<div style="font-size:0.7rem;">K</div></span>
 </div>
 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
 <button class="btn btn-secondary" onclick="G.pause()" style="font-size:0.75rem;padding:0.3rem 0.9rem;">⏯️暂停</button>
@@ -58,13 +58,7 @@ document.addEventListener('keydown',e=>{
   if(!go||pa)return;
   const km={d:0,f:1,j:2,k:3};const l=km[e.key.toLowerCase()];
   if(l===undefined)return;
-  // 高亮
-  const el=document.getElementById(['ld','lf','lj','lk'][l]);el.classList.add('p');setTimeout(()=>el.classList.remove('p'),100);
-  // 判定
-  let h=false;
-  for(let i=notes.length-1;i>=0;i--){const n=notes[i];if(n.l===l&&!n.hit&&Math.abs(n.y-HY)<HZ){n.hit=true;h=true;combo++;if(combo>best)best=combo;const b=Math.abs(n.y-HY)<15?100:Math.abs(n.y-HY)<30?70:40;sc+=b*(1+Math.floor(combo/15));for(let j=0;j<6;j++)particles.push({x:LX[l],y:HY,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*4-2,l:12+Math.random()*12,c:LC[l],r:Math.random()*2+1});break;}}
-  if(!h){combo=0;miss++;}
-  updH();
+  hitLane(l);
 });
 
 function updH(){document.getElementById('s').textContent=sc;document.getElementById('c').textContent='x'+combo;document.getElementById('m').textContent=miss;}
@@ -93,8 +87,9 @@ function draw(){
   if(pa){ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️暂停',W/2,H/2);}
 }
 
+function hitLane(l){if(!go||pa)return;const el=document.getElementById(['ld','lf','lj','lk'][l]);el.classList.add('p');setTimeout(()=>el.classList.remove('p'),100);let h=false;for(let i=notes.length-1;i>=0;i--){const n=notes[i];if(n.l===l&&!n.hit&&Math.abs(n.y-HY)<HZ){n.hit=true;h=true;combo++;if(combo>best)best=combo;const b=Math.abs(n.y-HY)<15?100:Math.abs(n.y-HY)<30?70:40;sc+=b*(1+Math.floor(combo/15));for(let j=0;j<6;j++)particles.push({x:LX[l],y:HY,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*4-2,l:12+Math.random()*12,c:LC[l],r:Math.random()*2+1});break;}}if(!h){combo=0;miss++;}updH();}
 function rst(){notes=[];particles=[];sc=0;combo=0;best=1;miss=0;go=true;pa=false;spT=0;updH();}
-window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;}};
+window.G={restart:rst,pause:()=>{if(!go)return;pa=!pa;},hit:hitLane};
 
 function loop(){upd();draw();requestAnimationFrame(loop);}
 rst();loop();
