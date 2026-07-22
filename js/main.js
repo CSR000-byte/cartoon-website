@@ -163,12 +163,32 @@ function showToast(message, duration = 2500) {
 }
 
 // ============================================
+// 🌐 API 基础配置
+// ============================================
+const API_BASE = window.location.origin;
+
+async function apiFetch(path, options = {}) {
+  const url = `${API_BASE}${path}`;
+  const config = {
+    headers: { 'Content-Type': 'application/json' },
+    ...options
+  };
+  const res = await fetch(url, config);
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || `请求失败 (${res.status})`);
+  }
+  return data;
+}
+
+// ============================================
 // 📧 联系表单处理
 // ============================================
-function handleContactSubmit(event) {
+async function handleContactSubmit(event) {
   event.preventDefault();
 
   const form = event.target;
+  const submitBtn = form.querySelector('button[type="submit"]');
   const name = form.querySelector('#name')?.value || '';
   const email = form.querySelector('#email')?.value || '';
   const subject = form.querySelector('#subject')?.value || '';
@@ -185,10 +205,28 @@ function handleContactSubmit(event) {
     return;
   }
 
-  // 模拟发送（占位，不实际提交）
-  console.log('📨 表单数据（模拟）:', { name, email, subject, message });
-  showToast('🚀 星际信号已发送！谢谢你的留言～（演示模式）', 3500);
-  form.reset();
+  // 禁用按钮防止重复提交
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ 发送中…';
+  }
+
+  try {
+    const result = await apiFetch('/api/contact', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, subject, message })
+    });
+    showToast(result.message || '🚀 星际信号已发送！谢谢你的留言～', 3500);
+    form.reset();
+  } catch (err) {
+    showToast('⚠️ 发送失败，请稍后重试…（后台服务未启动？）', 3500);
+    console.error('联系表单提交失败:', err);
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🚀 发送星际信号';
+    }
+  }
 }
 
 // ============================================
