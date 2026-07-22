@@ -79,6 +79,7 @@
 
 <div class="toast" id="toast"></div>
 <script src="js/main.js"></script>
+<script>let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();function pn(f,d,s,t='sine',v=0.035){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}function bgm(){if(!mo)return;const n=ac.currentTime;const m=[392,440,494,392,330,349,392,330,294,330,392,494,440,392,349,330];m.forEach((f,i)=>pn(f,0.35,n+i*0.5,'sine',0.03));setTimeout(bgm,m.length*500+800);}bgm();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m'){mo=!mo;showToast(mo?'🔊':'🔇');}});</script>
 <script>
 const pet={
   hunger:70,happy:70,energy:70,exp:0,level:1,poop:false,

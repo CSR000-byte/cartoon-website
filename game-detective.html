@@ -106,6 +106,7 @@ body{background:linear-gradient(180deg,#1a0a0a 0%,#2d1810 50%,#1a0c08 100%);}
 
 <div class="toast" id="toast"></div>
 <script src="js/main.js"></script>
+<script>let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();function pn(f,d,s,t='triangle',v=0.03){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}function bgm(){if(!mo)return;const n=ac.currentTime;const m=[262,294,330,262,294,330,349,294,330,349,392,330,262,294,262,220];m.forEach((f,i)=>pn(f,0.4,n+i*0.6,'triangle',0.025));setTimeout(bgm,m.length*600+1000);}bgm();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m'){mo=!mo;showToast(mo?'🔊':'🔇');}});</script>
 <script>
 // === 案件数据库（8个案件保持不变） ===
 const CASES=[{

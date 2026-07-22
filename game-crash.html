@@ -47,11 +47,18 @@
 <div class="toast" id="toast"></div>
 <script src="js/main.js"></script>
 <script>
+// 🎵 配乐
+let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();
+function pn(f,d,s,t='square',v=0.05){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}
+function bgm(){if(!mo)return;const n=ac.currentTime;const m=[330,392,440,392,349,330,294,330,392,440,523,440,392,349,330,294];m.forEach((f,i)=>pn(f,0.18,n+i*0.2,'triangle',0.04));setTimeout(bgm,m.length*200+700);}
+bgm();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m'){mo=!mo;showToast(mo?'🔊':'🔇');}});
+</script>
+<script>
 (function(){
   const canvas=document.getElementById('crashCanvas'),ctx=canvas.getContext('2d');
   let shipY=canvas.height/2,shipX=120,shipW=50,shipH=35;
   let rocks=[],particles=[],floats=[],score=0,best=localStorage.getItem('crashBest')||0,crashes=0;
-  let gameOn=false,gameStarted=false,adviceTimer=0,shakeTimer=0;
+  let gameOn=true,adviceTimer=0,shakeTimer=0;
   const advice=[
     {text:'小星：往左！不，往右！等等我想想…',from:'🐱',wrong:'left'},
     {text:'火狐：冲过去！我有23%的把握没事！',from:'🦊',wrong:'up'},
@@ -66,11 +73,10 @@
 
   canvas.addEventListener('touchmove',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();shipY=(e.touches[0].clientY-r.top)*(canvas.height/r.height);shipY=Math.max(20,Math.min(canvas.height-20,shipY));},{passive:false});
 
-  canvas.addEventListener('click',e=>{if(!gameStarted)startGame();else if(!gameOn)restart();});
-  function startGame(){gameOn=true;gameStarted=true;shipY=canvas.height/2;rocks=[];particles=[];floats=[];score=0;adviceTimer=0;currentAdvice=null;}
+  canvas.addEventListener('click',e=>{if(!gameOn)restart();});
   function restart(){shipY=canvas.height/2;rocks=[];particles=[];floats=[];score=0;crashes++;gameOn=true;adviceTimer=0;currentAdvice=null;document.getElementById('crashDisplay').textContent=crashes;}
-  function pauseGame(){if(!gameStarted||!gameOn)return;gameOn=!gameOn;showToast(gameOn?'▶️ 继续':'⏸️ 暂停中');}
-  window.restart=restart;window.pauseGame=pauseGame;window.startGame=startGame;
+  function pauseGame(){if(!gameOn)return;gameOn=!gameOn;showToast(gameOn?'▶️ 继续':'⏸️ 暂停中');}
+  window.restart=restart;window.pauseGame=pauseGame;
   document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='p')pauseGame();});
 
   function spawnRock(){
@@ -100,8 +106,7 @@
   }
 
   function update(){
-    if(!gameOn&&!gameStarted)return;
-    if(!gameOn&&gameStarted)return;
+    if(!gameOn)return;
     score+=0.016;
     document.getElementById('timeDisplay').textContent=(Math.floor(score*10)/10).toFixed(1);
     if(Math.random()<0.02+score/300)spawnRock();
@@ -154,13 +159,7 @@
     }
   }
 
-    // 开始/暂停覆盖层
-  if(!gameStarted){
-    ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='#FD0';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('🚀 翻车模拟器',canvas.width/2,canvas.height/2-40);
-    ctx.fillStyle='#FFF';ctx.font='18px Quicksand';ctx.fillText('点击屏幕开始游戏！',canvas.width/2,canvas.height/2+10);
-    ctx.fillStyle='#0CC';ctx.font='bold 18px Quicksand';ctx.fillText('👆 点击开始 👆',canvas.width/2,canvas.height/2+50);
-  }else if(!gameOn){
+    if(!gameOn){
     ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️ 暂停中',canvas.width/2,canvas.height/2);
   }

@@ -66,6 +66,7 @@
 
 <div class="toast" id="toast"></div>
 <script src="js/main.js"></script>
+<script>let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();function pn(f,d,s,t='sine',v=0.04){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}function bgm(){if(!mo)return;const n=ac.currentTime;const m=[523,587,659,698,784,880,784,698,659,587,523,494,440,494,523,587];m.forEach((f,i)=>pn(f,0.25,n+i*0.28,'sine',0.035));setTimeout(bgm,m.length*280+500);}bgm();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m'){mo=!mo;showToast(mo?'🔊':'🔇');}});</script>
 <script>
 const EMOJIS=['🐱','🦊','🐼','🐰','🦄','🐧','🚀','⭐','🌙','🍬','💫','🌈','🎨','🔮','🌌','🎪','🍙','💖','🛸','✨'];
 let totalPairs=8,moves=0,matches=0,best=null,flipped=[],locked=false,tiles=[];

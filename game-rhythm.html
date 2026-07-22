@@ -58,18 +58,18 @@
 </main>
 <div class="toast" id="toast"></div>
 <script src="js/main.js"></script>
+<script>let mo=true;const ac=new(window.AudioContext||window.webkitAudioContext)();function pn(f,d,s,t='square',v=0.04){if(!mo)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d);}catch(e){}}function bgm(){if(!mo)return;const n=ac.currentTime;const m=[523,494,440,392,349,330,294,330,349,440,494,523,587,659,698,784];m.forEach((f,i)=>pn(f,0.15,n+i*0.18,'triangle',0.03));setTimeout(bgm,m.length*180+600);}bgm();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='m'){mo=!mo;showToast(mo?'🔊':'🔇');}});</script>
 <script>
 (function(){
   const canvas=document.getElementById('rhythmCanvas'),ctx=canvas.getContext('2d');
   const LANES=4,LANE_W=100,LANE_X=[150,280,410,540],HIT_Y=420,HIT_ZONE=50;
-  let notes=[],particles=[],floats=[],score=0,combo=0,maxCombo=1,misses=0,gameOn=false,gameStarted=false;
+  let notes=[],particles=[],floats=[],score=0,combo=0,maxCombo=1,misses=0,gameOn=true;
   const keyMap={},keyLane={'d':0,'f':1,'j':2,'k':3,'KeyD':0,'KeyF':1,'KeyJ':2,'KeyK':3};
   const laneColors=['#6C5CE7','#FF7675','#FDCB6E','#00CEC9'];
   const laneEmojis=['🟣','🔴','🟡','🟢'];
 
   document.addEventListener('keydown',e=>{
     if(e.key.toLowerCase()==='p'){pauseGame();return;}
-    if(!gameStarted){startGame();return;}
     if(!gameOn)return restart();
     const lane=keyLane[e.key]??keyLane[e.code];
     if(lane===undefined)return;
@@ -102,10 +102,9 @@
     });
   });
 
-  function startGame(){gameOn=true;gameStarted=true;notes=[];particles=[];floats=[];score=0;combo=0;misses=0;updateHUD();}
-function restart(){notes=[];particles=[];floats=[];score=0;combo=0;misses=0;gameOn=true;updateHUD();}
-function pauseGame(){if(!gameStarted||!gameOn)return;gameOn=!gameOn;showToast(gameOn?'▶️ 继续':'⏸️ 暂停中');}
-window.restart=restart;window.pauseGame=pauseGame;window.startGame=startGame;
+  function restart(){notes=[];particles=[];floats=[];score=0;combo=0;misses=0;gameOn=true;updateHUD();}
+function pauseGame(){if(!gameOn)return;gameOn=!gameOn;showToast(gameOn?'▶️ 继续':'⏸️ 暂停中');}
+window.restart=restart;window.pauseGame=pauseGame;
 
   function spawnNote(){notes.push({lane:Math.floor(Math.random()*LANES),y:-30,x:LANE_X[Math.floor(Math.random()*LANES)],hit:false,speed:3+score/500});notes[notes.length-1].x=LANE_X[notes[notes.length-1].lane];}
 
@@ -158,18 +157,11 @@ window.restart=restart;window.pauseGame=pauseGame;window.startGame=startGame;
 
   function loop(){update();draw();requestAnimationFrame(loop);}
   for(let i=0;i<3;i++)spawnNote();
-    // 开始/暂停
-  if(!gameStarted){
-    ctx.fillStyle='rgba(0,0,0,0.75)';ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='#FD0';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('🎵 彩虹马节奏猫步',canvas.width/2,canvas.height/2-40);
-    ctx.fillStyle='#FFF';ctx.font='18px Quicksand';ctx.fillText('点击屏幕开始游戏！',canvas.width/2,canvas.height/2+10);
-    ctx.fillStyle='#0CC';ctx.font='bold 18px Quicksand';ctx.fillText('👆 点击开始 👆',canvas.width/2,canvas.height/2+50);
-  }else if(!gameOn){
+    if(!gameOn){
     ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle='#FFF';ctx.font='bold 36px Fredoka One';ctx.textAlign='center';ctx.fillText('⏸️ 暂停中',canvas.width/2,canvas.height/2);
   }
 }
-canvas.addEventListener('click',()=>{if(!gameStarted)startGame();});
 loop();
 })();
 </script>
