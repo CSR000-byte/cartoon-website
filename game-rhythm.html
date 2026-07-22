@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 彩虹马的节奏猫步 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .rhythm-container{max-width:750px;margin:0 auto;text-align:center;}
+    #rhythmCanvas{border-radius:var(--radius-lg);border:3px solid rgba(255,255,255,0.1);box-shadow:var(--shadow-float);display:block;margin:0 auto;max-width:100%;background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a1a 100%);}
+    .rhythm-hud{display:flex;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
+    .r-stat{background:var(--bg-card);border-radius:var(--radius-md);padding:0.5rem 1.2rem;border:1px solid rgba(255,255,255,0.08);font-family:var(--font-heading);font-size:1.1rem;}
+    .lanes{display:flex;justify-content:center;gap:2rem;margin:1rem 0;}
+    .lane-key{width:70px;height:70px;border-radius:var(--radius-lg);border:2px solid rgba(255,255,255,0.2);background:var(--bg-card);display:flex;align-items:center;justify-content:center;font-size:2rem;transition:all 0.1s;cursor:pointer;}
+    .lane-key.pressed{border-color:var(--color-accent-teal);background:rgba(0,206,201,0.3);transform:scale(0.9);box-shadow:var(--shadow-glow-teal);}
+    .lane-key:nth-child(1){border-color:rgba(108,92,231,0.5);}.lane-key:nth-child(2){border-color:rgba(255,118,117,0.5);}
+    .lane-key:nth-child(3){border-color:rgba(253,203,110,0.5);}.lane-key:nth-child(4){border-color:rgba(0,206,201,0.5);}
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<header class="site-header">
+  <div class="nav-container">
+    <a href="game.html" class="nav-logo"><span class="logo-icon">🎵</span><span>卡创 · 节奏舞台</span></a>
+    <nav><ul class="nav-links"><li><a href="game.html">🎮 游戏厅</a></li><li><a href="index.html">🏠 首页</a></li></ul></nav>
+  </div>
+</header>
+<main>
+<section class="page-container">
+<div class="rhythm-container">
+  <div class="section-header">
+    <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">🎵 音乐游戏</div>
+    <h1 class="section-title">🦄 彩虹马的节奏猫步</h1>
+    <p class="section-subtitle">星光音符从天而降！踩准节拍，跳出最炫的星际猫步！<br><small style="color:var(--text-muted);">手残党慎入。彩虹马不承担任何节奏感丧失的责任。</small></p>
+  </div>
+  <div class="rhythm-hud">
+    <div class="r-stat"><span style="font-size:0.65rem;color:var(--text-muted);display:block;">🎯 得分</span><span id="rScore">0</span></div>
+    <div class="r-stat"><span style="font-size:0.65rem;color:var(--text-muted);display:block;">🔥 连击</span><span id="rCombo">x1</span></div>
+    <div class="r-stat"><span style="font-size:0.65rem;color:var(--text-muted);display:block;">💎 最高连击</span><span id="rMaxCombo">x1</span></div>
+    <div class="r-stat"><span style="font-size:0.65rem;color:var(--text-muted);display:block;">❌ 失误</span><span id="rMiss">0</span></div>
+  </div>
+  <canvas id="rhythmCanvas" width="700" height="500"></canvas>
+  <div class="lanes">
+    <div class="lane-key" id="keyD">⬅️</div>
+    <div class="lane-key" id="keyF">⬇️</div>
+    <div class="lane-key" id="keyJ">⬆️</div>
+    <div class="lane-key" id="keyK">➡️</div>
+  </div>
+  <p style="color:var(--text-muted);margin-top:0.5rem;font-size:0.8rem;">⌨️ <strong>D F J K</strong> 对应四列 | 音符落到判定线时按下对应键</p>
+</div>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+<script src="js/main.js"></script>
+<script>
+(function(){
+  const canvas=document.getElementById('rhythmCanvas'),ctx=canvas.getContext('2d');
+  const LANES=4,LANE_W=100,LANE_X=[150,280,410,540],HIT_Y=420,HIT_ZONE=50;
+  let notes=[],particles=[],floats=[],score=0,combo=0,maxCombo=1,misses=0,gameOn=true;
+  const keyMap={},keyLane={'d':0,'f':1,'j':2,'k':3,'KeyD':0,'KeyF':1,'KeyJ':2,'KeyK':3};
+  const laneColors=['#6C5CE7','#FF7675','#FDCB6E','#00CEC9'];
+  const laneEmojis=['🟣','🔴','🟡','🟢'];
+
+  document.addEventListener('keydown',e=>{
+    if(!gameOn)return restart();
+    const lane=keyLane[e.key]??keyLane[e.code];
+    if(lane===undefined)return;
+    const keyEl=document.getElementById(['keyD','keyF','keyJ','keyK'][lane]);
+    if(keyEl)keyEl.classList.add('pressed');
+    setTimeout(()=>{if(keyEl)keyEl.classList.remove('pressed');},100);
+    // 检测最近的音符
+    let hit=false;
+    for(let i=notes.length-1;i>=0;i--){
+      const n=notes[i];
+      if(n.lane===lane&&!n.hit&&Math.abs(n.y-HIT_Y)<HIT_ZONE){
+        n.hit=true;hit=true;
+        combo++;if(combo>maxCombo)maxCombo=combo;
+        const bonus=Math.abs(n.y-HIT_Y)<20?100:Math.abs(n.y-HIT_Y)<35?70:40;
+        score+=bonus*(1+Math.floor(combo/20));
+        const rating=bonus===100?'PERFECT!✨':bonus===70?'GREAT!👍':'OK';
+        floats.push({x:n.x,y:n.y,text:rating,color:bonus===100?'#FDCB6E':bonus===70?'#00CEC9':'#fff',life:40});
+        for(let j=0;j<8;j++)particles.push({x:n.x,y:n.y,vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6-2,life:15+Math.random()*15,color:laneColors[lane],r:Math.random()*3+1});
+        break;
+      }
+    }
+    if(!hit){combo=0;misses++;}
+    updateHUD();
+  });
+
+  ['keyD','keyF','keyJ','keyK'].forEach(id=>{
+    document.getElementById(id).addEventListener('mousedown',()=>{
+      const lane={keyD:0,keyF:1,keyJ:2,keyK:3}[id];
+      document.dispatchEvent(new KeyboardEvent('keydown',{key:'dfjk'[lane]}));
+    });
+  });
+
+  function restart(){notes=[];particles=[];floats=[];score=0;combo=0;misses=0;gameOn=true;updateHUD();}
+
+  function spawnNote(){notes.push({lane:Math.floor(Math.random()*LANES),y:-30,x:LANE_X[Math.floor(Math.random()*LANES)],hit:false,speed:3+score/500});notes[notes.length-1].x=LANE_X[notes[notes.length-1].lane];}
+
+  function updateHUD(){
+    document.getElementById('rScore').textContent=score;
+    document.getElementById('rCombo').textContent='x'+combo;
+    document.getElementById('rMaxCombo').textContent='x'+maxCombo;
+    document.getElementById('rMiss').textContent=misses;
+  }
+
+  let spawnTimer=0;
+  function update(){
+    if(!gameOn)return;
+    spawnTimer++;if(spawnTimer>Math.max(35-score/100,15)){spawnNote();spawnTimer=0;if(Math.random()<0.3)spawnNote();}
+    notes.forEach(n=>{if(!n.hit)n.y+=n.speed;});
+    for(let i=notes.length-1;i>=0;i--){
+      if(notes[i].y>HIT_Y+HIT_ZONE&&!notes[i].hit){combo=0;misses++;notes.splice(i,1);updateHUD();}
+      if(notes[i].hit||notes[i].y>canvas.height+30)notes.splice(i,1);
+    }
+    particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life--;p.vx*=0.95;p.vy*=0.95;});
+    floats.forEach(f=>{f.y-=1.5;f.life--;});
+    particles=particles.filter(p=>p.life>0);floats=floats.filter(f=>f.life>0);
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // 判定线
+    ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=2;ctx.setLineDash([8,8]);
+    ctx.beginPath();ctx.moveTo(80,HIT_Y);ctx.lineTo(canvas.width-80,HIT_Y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect(80,HIT_Y-HIT_ZONE,canvas.width-160,HIT_ZONE*2);
+    // 轨道
+    LANE_X.forEach((x,i)=>{
+      ctx.strokeStyle=laneColors[i]+'33';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();
+    });
+    // 音符
+    notes.forEach(n=>{
+      if(n.hit)return;
+      const gradient=ctx.createRadialGradient(n.x,n.y,5,n.x,n.y,25);
+      gradient.addColorStop(0,laneColors[n.lane]);gradient.addColorStop(1,'transparent');
+      ctx.fillStyle=gradient;ctx.beginPath();ctx.arc(n.x,n.y,25,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(n.x,n.y,12,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=laneColors[n.lane];ctx.beginPath();ctx.arc(n.x,n.y,8,0,Math.PI*2);ctx.fill();
+    });
+    // 粒子
+    particles.forEach(p=>{ctx.fillStyle=p.color;ctx.globalAlpha=p.life/20;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
+    // 浮动文字
+    floats.forEach(f=>{ctx.fillStyle=f.color;ctx.font='bold 18px Quicksand,sans-serif';ctx.textAlign='center';ctx.globalAlpha=f.life/40;ctx.fillText(f.text,f.x,f.y-20);});ctx.globalAlpha=1;
+  }
+
+  function loop(){update();draw();requestAnimationFrame(loop);}
+  for(let i=0;i<3;i++)spawnNote();
+  loop();
+})();
+</script>
+</body>
+</html>

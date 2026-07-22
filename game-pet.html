@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐱 小星养成记 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .pet-container { max-width:600px; margin:0 auto; }
+    .pet-display { text-align:center; padding:2rem; background:var(--bg-card); border-radius:var(--radius-xl); border:2px solid rgba(255,255,255,0.08); margin-bottom:1.5rem; position:relative; }
+    .pet-sprite { font-size:8rem; display:inline-block; transition:transform 0.3s; cursor:pointer; user-select:none; animation:float 3s ease-in-out infinite; }
+    .pet-sprite:active { transform:scale(1.15); }
+    .pet-name { font-family:var(--font-heading); font-size:1.8rem; margin:0.5rem 0; }
+    .pet-mood { color:var(--text-muted); font-size:0.9rem; min-height:1.5rem; }
+    .stat-bars { display:grid; gap:0.6rem; margin:1rem 0; }
+    .stat-row { display:flex; align-items:center; gap:0.8rem; }
+    .stat-label { width:50px; text-align:right; font-size:1.2rem; flex-shrink:0; }
+    .stat-bar-bg { flex:1; height:12px; background:var(--bg-glass); border-radius:10px; overflow:hidden; }
+    .stat-bar-fill { height:100%; border-radius:10px; transition:width 0.5s,background 0.5s; }
+    .actions { display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem; margin:1rem 0; }
+    .action-btn { background:var(--bg-card); border:2px solid rgba(255,255,255,0.1); border-radius:var(--radius-lg); padding:1rem 0.5rem; text-align:center; cursor:pointer; transition:all 0.3s; font-size:0.9rem; color:var(--text-primary); }
+    .action-btn:hover { transform:translateY(-4px); box-shadow:var(--shadow-float); border-color:var(--color-accent-teal); }
+    .action-btn:active { transform:scale(0.95); }
+    .action-btn .icon { font-size:2.2rem; display:block; margin-bottom:0.3rem; }
+    .pet-log { background:var(--bg-glass); border-radius:var(--radius-lg); padding:1rem; max-height:120px; overflow-y:auto; margin-top:1rem; font-size:0.8rem; color:var(--text-muted); }
+    .pet-log p { margin:0.2rem 0; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.2rem; }
+    .evolution { animation:glowPulse 2s ease-in-out infinite; }
+    @keyframes glowPulse { 0%,100%{filter:drop-shadow(0 0 10px rgba(253,203,110,0.5));} 50%{filter:drop-shadow(0 0 30px rgba(253,203,110,1));} }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<header class="site-header">
+  <div class="nav-container">
+    <a href="game.html" class="nav-logo"><span class="logo-icon">🐱</span><span>卡创 · 养成中心</span></a>
+    <nav><ul class="nav-links"><li><a href="game.html">🎮 游戏厅</a></li><li><a href="index.html">🏠 首页</a></li></ul></nav>
+  </div>
+</header>
+
+<main>
+<section class="page-container">
+<div class="pet-container">
+  <div class="section-header">
+    <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">🐱 养成游戏</div>
+    <h1 class="section-title">🐱 小星养成记</h1>
+    <p class="section-subtitle">领养一只幼年版小星！喂食、玩耍、哄睡、铲屎……<br>企鹅船长：养真猫已经够累了你还养虚拟的？</p>
+  </div>
+
+  <div class="pet-display" id="petDisplay">
+    <div class="pet-sprite" id="petSprite" onclick="petPet()">🐱</div>
+    <div class="pet-name">小星 <small style="color:var(--text-muted);">· Lv.<span id="petLevel">1</span></small></div>
+    <div class="pet-mood" id="petMood">✨ 好奇地看着你…</div>
+    <div class="stat-bars">
+      <div class="stat-row"><span class="stat-label">🍖</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="hungerBar" style="width:70%;background:var(--color-accent-yellow);"></div></div></div>
+      <div class="stat-row"><span class="stat-label">💖</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="happyBar" style="width:70%;background:var(--color-accent-pink);"></div></div></div>
+      <div class="stat-row"><span class="stat-label">⚡</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="energyBar" style="width:70%;background:var(--color-accent-teal);"></div></div></div>
+      <div class="stat-row"><span class="stat-label">✨</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="expBar" style="width:0%;background:var(--color-primary);"></div></div></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="action-btn" onclick="feed()"><span class="icon">🍖</span>喂食</button>
+    <button class="action-btn" onclick="play()"><span class="icon">🎾</span>玩耍</button>
+    <button class="action-btn" onclick="sleep_()"><span class="icon">😴</span>哄睡</button>
+    <button class="action-btn" onclick="clean()"><span class="icon">🧹</span>铲屎</button>
+  </div>
+
+  <div class="pet-log" id="petLog">
+    <p>🐱 小星来到了你的家！好好照顾他吧～</p>
+  </div>
+</div>
+</section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="js/main.js"></script>
+<script>
+const pet={
+  hunger:70,happy:70,energy:70,exp:0,level:1,poop:false,
+  name:'小星',emoji:'🐱',
+  sprites:{baby:'🐱',child:'😺',teen:'😸',adult:'🐱✨'}
+};
+
+function clamp(v){return Math.max(0,Math.min(100,v));}
+function log(msg){const l=document.getElementById('petLog');l.innerHTML='<p>'+msg+'</p>'+l.innerHTML;if(l.children.length>20)l.lastChild.remove();}
+
+function updateBars(){
+  document.getElementById('hungerBar').style.width=pet.hunger+'%';
+  document.getElementById('happyBar').style.width=pet.happy+'%';
+  document.getElementById('energyBar').style.width=pet.energy+'%';
+  document.getElementById('expBar').style.width=pet.exp+'%';
+
+  // 颜色变化
+  ['hungerBar','happyBar','energyBar'].forEach(id=>{
+    const el=document.getElementById(id),v=parseFloat(el.style.width);
+    el.style.background=v>50?'var(--color-accent-teal)':v>25?'var(--color-accent-yellow)':'var(--color-accent-pink)';
+  });
+
+  // 状态文字
+  const mood=document.getElementById('petMood');
+  if(pet.hunger<20) mood.textContent='🍖 好饿…有没有吃的…';
+  else if(pet.happy<20) mood.textContent='😿 无聊死了…陪我玩！';
+  else if(pet.energy<20) mood.textContent='😴 困…Zzz…';
+  else if(pet.poop) mood.textContent='💩 这里有异味…快铲屎！';
+  else if(pet.happy>80) mood.textContent='😸 好开心！最喜欢你了！';
+  else mood.textContent='✨ 好奇地看着周围…';
+
+  // 升级检查
+  if(pet.exp>=100){
+    pet.exp=0;pet.level++;pet.hunger=clamp(pet.hunger+20);pet.happy=clamp(pet.happy+20);pet.energy=clamp(pet.energy+20);
+    document.getElementById('petLevel').textContent=pet.level;
+    if(pet.level===3) pet.emoji=pet.sprites.teen;
+    if(pet.level===5) pet.emoji=pet.sprites.adult;
+    document.getElementById('petSprite').textContent=pet.emoji;
+    if(pet.level>=5) document.getElementById('petSprite').classList.add('evolution');
+    log('🎉 小星升级了！现在是 Lv.'+pet.level+'！');
+    showToast('🎉 升级！小星 Lv.'+pet.level+'！',3000);
+  }
+  updateSprite();
+}
+
+function updateSprite(){
+  const el=document.getElementById('petSprite');
+  if(pet.level<3) el.textContent=pet.sprites.baby;
+  else if(pet.level<5) el.textContent=pet.sprites.teen;
+  else el.textContent=pet.sprites.adult;
+}
+
+function feed(){
+  if(pet.energy<10){log('😴 小星太困了，不想吃…');showToast('太困了先哄睡吧~');return;}
+  pet.hunger=clamp(pet.hunger+25);pet.happy=clamp(pet.happy+5);pet.energy=clamp(pet.energy-5);pet.exp=clamp(pet.exp+10);pet.poop=true;
+  log('🍖 小星大口吃着星星饼干！好香～');
+  showToast('🍖 +饱腹 +开心');
+  updateBars();
+}
+function play(){
+  if(pet.energy<15){log('😴 小星没力气玩了…');showToast('太累了先休息吧~');return;}
+  pet.happy=clamp(pet.happy+25);pet.hunger=clamp(pet.hunger-15);pet.energy=clamp(pet.energy-20);pet.exp=clamp(pet.exp+15);
+  log('🎾 小星追着激光笔满屋跑！好快乐！');
+  showToast('🎾 +开心 +经验');
+  document.getElementById('petSprite').style.transform='rotate(15deg)';
+  setTimeout(()=>document.getElementById('petSprite').style.transform='',300);
+  updateBars();
+}
+function sleep_(){
+  pet.energy=clamp(pet.energy+40);pet.hunger=clamp(pet.hunger-10);pet.happy=clamp(pet.happy+5);pet.exp=clamp(pet.exp+5);
+  log('😴 小星卷成一团睡着了…zzZ…好可爱…');
+  showToast('😴 +体力');
+  updateBars();
+}
+function clean(){
+  if(!pet.poop){log('🧹 很干净，不需要铲屎～');showToast('已经很干净啦~');return;}
+  pet.poop=false;pet.happy=clamp(pet.happy+10);pet.exp=clamp(pet.exp+5);
+  log('🧹 铲屎完成！小星满意地喵了一声～');
+  showToast('🧹 铲屎完成！');
+  updateBars();
+}
+function petPet(){
+  pet.happy=clamp(pet.happy+10);pet.exp=clamp(pet.exp+3);
+  log('✋ 你摸了摸小星的头，他发出了咕噜咕噜的声音～');
+  showToast('💖 摸摸头~');
+  updateBars();
+}
+
+// 随时间衰减
+setInterval(()=>{
+  pet.hunger=clamp(pet.hunger-2);pet.happy=clamp(pet.happy-1);pet.energy=clamp(pet.energy-1.5);
+  if(pet.hunger<10) log('⚠️ 小星饿坏了！快喂食！');
+  if(pet.happy<10) log('⚠️ 小星不开心了！陪他玩！');
+  if(pet.energy<10) log('⚠️ 小星困得睁不开眼了…');
+  updateBars();
+},8000);
+
+updateBars();
+log('🐱 小星来到新家！用心照顾他吧～');
+</script>
+</body>
+</html>

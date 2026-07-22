@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧩 星际记忆大挑战 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .puzzle-container { max-width:650px; margin:0 auto; }
+    .board { display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem; margin:1.5rem 0; }
+    .tile { aspect-ratio:1; background:var(--bg-card); border-radius:var(--radius-lg); border:2px solid rgba(255,255,255,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:3rem; transition:all 0.3s; position:relative; perspective:600px; }
+    .tile:hover { border-color:var(--color-accent-teal); transform:scale(1.03); }
+    .tile.flipped,.tile.matched { border-color:var(--color-accent-yellow); background:rgba(253,203,110,0.15); box-shadow:var(--shadow-glow-teal); }
+    .tile.matched { border-color:var(--color-accent-teal); background:rgba(0,206,201,0.15); }
+    .tile.wrong { animation:shake 0.4s ease; border-color:var(--color-accent-pink) !important; }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+    .puzzle-hud { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; margin:1rem 0; }
+    .puzzle-stat { text-align:center; }
+    .puzzle-stat .val { font-family:var(--font-heading); font-size:2rem; color:var(--color-accent-teal); }
+    .puzzle-stat .lbl { font-size:0.75rem; color:var(--text-muted); }
+    .diff-btns { display:flex; gap:0.5rem; justify-content:center; margin:1rem 0; flex-wrap:wrap; }
+    .diff-btn { padding:0.5rem 1.5rem; border-radius:var(--radius-pill); border:2px solid rgba(255,255,255,0.15); background:var(--bg-card); color:var(--text-primary); cursor:pointer; font-family:var(--font-body); font-weight:600; transition:all 0.3s; }
+    .diff-btn:hover,.diff-btn.active { border-color:var(--color-accent-teal); background:rgba(0,206,201,0.15); }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<header class="site-header">
+  <div class="nav-container">
+    <a href="game.html" class="nav-logo"><span class="logo-icon">🧩</span><span>卡创 · 益智馆</span></a>
+    <nav><ul class="nav-links"><li><a href="game.html">🎮 游戏厅</a></li><li><a href="index.html">🏠 首页</a></li></ul></nav>
+  </div>
+</header>
+
+<main>
+<section class="page-container">
+<div class="puzzle-container">
+  <div class="section-header">
+    <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">🧩 益智游戏</div>
+    <h1 class="section-title">🧠 星际记忆大挑战</h1>
+    <p class="section-subtitle">月兔说练好记忆力就不会迷路了。<br>小星：真的吗？我不信。</p>
+  </div>
+
+  <div class="diff-btns">
+    <button class="diff-btn active" onclick="setDifficulty(8,'easyBtn')" id="easyBtn">😺 简单 (4×2)</button>
+    <button class="diff-btn" onclick="setDifficulty(12,'mediumBtn')" id="mediumBtn">😼 中等 (4×3)</button>
+    <button class="diff-btn" onclick="setDifficulty(16,'hardBtn')" id="hardBtn">😈 困难 (4×4)</button>
+  </div>
+
+  <div class="puzzle-hud">
+    <div class="puzzle-stat"><div class="val" id="moveCount">0</div><div class="lbl">🖱️ 步数</div></div>
+    <div class="puzzle-stat"><div class="val" id="matchCount">0</div><div class="lbl">✅ 配对</div></div>
+    <div class="puzzle-stat"><div class="val" id="bestScore">-</div><div class="lbl">🏆 最佳</div></div>
+  </div>
+
+  <div class="board" id="board"></div>
+  <div style="text-align:center;"><button class="btn btn-primary" onclick="resetGame()">🔄 重新开始</button></div>
+</div>
+</section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="js/main.js"></script>
+<script>
+const EMOJIS=['🐱','🦊','🐼','🐰','🦄','🐧','🚀','⭐','🌙','🍬','💫','🌈','🎨','🔮','🌌','🎪','🍙','💖','🛸','✨'];
+let totalPairs=8,moves=0,matches=0,best=null,flipped=[],locked=false,tiles=[];
+let cols=4;
+
+function setDifficulty(pairs,btnId){
+  totalPairs=pairs;cols=4;moves=0;matches=0;flipped=[];locked=false;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(btnId).classList.add('active');
+  resetGame();
+}
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function resetGame(){
+  moves=0;matches=0;flipped=[];locked=false;
+  const selected=shuffle([...EMOJIS]).slice(0,totalPairs);
+  const pairs=[...selected,...selected];
+  tiles=shuffle(pairs.map((emoji,i)=>({id:i,emoji,flipped:false,matched:false})));
+  document.getElementById('moveCount').textContent='0';
+  document.getElementById('matchCount').textContent='0';
+  document.getElementById('bestScore').textContent=best||'-';
+  renderBoard();
+}
+
+function renderBoard(){
+  const board=document.getElementById('board');
+  const rows=Math.ceil(totalPairs*2/cols);
+  board.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  board.innerHTML=tiles.map((t,i)=>`
+    <div class="tile ${t.flipped||t.matched?'flipped':''} ${t.matched?'matched':''}"
+         data-idx="${i}" onclick="flipTile(${i})">
+      ${t.flipped||t.matched?t.emoji:'❓'}
+    </div>`).join('');
+}
+
+function flipTile(idx){
+  if(locked)return;
+  const t=tiles[idx];
+  if(t.flipped||t.matched)return;
+  if(flipped.length>=2)return;
+
+  t.flipped=true;flipped.push(idx);moves++;
+  document.getElementById('moveCount').textContent=moves;
+  renderBoard();
+
+  if(flipped.length===2){
+    const [a,b]=flipped;
+    if(tiles[a].emoji===tiles[b].emoji){
+      tiles[a].matched=true;tiles[b].matched=true;matches++;flipped=[];
+      document.getElementById('matchCount').textContent=matches;
+      renderBoard();
+      showToast(['喵！配对成功！','太棒了！','记忆力不错嘛！','小星都记住了！'][Math.floor(Math.random()*4)]);
+      if(matches===totalPairs){
+        if(!best||moves<best)best=moves;
+        document.getElementById('bestScore').textContent=best;
+        setTimeout(()=>{
+          const taunts=['企鹅船长：比小星强多了。','月兔：看吧，练习是有用的！','火狐：要不要来帮我记爆炸配方？','胖达：奖励一块星星蛋糕！'];
+          showToast('🎉 全部配对成功！'+taunts[Math.floor(Math.random()*taunts.length)],4000);
+        },500);
+      }
+    }else{
+      locked=true;
+      // 错误抖动
+      setTimeout(()=>{
+        document.querySelectorAll('.tile').forEach(el=>{
+          const i=parseInt(el.dataset.idx);
+          if(i===a||i===b)el.classList.add('wrong');
+        });
+      },100);
+      setTimeout(()=>{
+        tiles[a].flipped=false;tiles[b].flipped=false;flipped=[];locked=false;
+        renderBoard();
+      },800);
+    }
+  }
+}
+
+setDifficulty(8,'easyBtn');
+</script>
+</body>
+</html>

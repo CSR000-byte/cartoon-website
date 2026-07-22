@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔫 火狐的星际靶场 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔫</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .game-container { max-width:800px; margin:0 auto; text-align:center; }
+    #gameCanvas { border-radius:var(--radius-lg); border:3px solid rgba(255,255,255,0.1); box-shadow:var(--shadow-float); display:block; margin:0 auto; cursor:crosshair; max-width:100%; background:radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a1a 100%); }
+    .hud { display:flex; justify-content:space-between; gap:1rem; margin-bottom:1rem; flex-wrap:wrap; }
+    .hud-item { background:var(--bg-card); border-radius:var(--radius-md); padding:0.5rem 1.2rem; border:1px solid rgba(255,255,255,0.08); font-family:var(--font-heading); font-size:1.1rem; }
+    .hud-item .label { font-size:0.65rem; color:var(--text-muted); font-family:var(--font-body); display:block; }
+    .overlay-end { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:1000; }
+    .end-box { background:var(--bg-dark); border:2px solid var(--color-primary); border-radius:var(--radius-xl); padding:2.5rem; text-align:center; max-width:420px; box-shadow:var(--shadow-float-hover); }
+    .end-box h2 { font-family:var(--font-heading); font-size:2rem; }
+    .end-box .score { font-size:3.5rem; font-family:var(--font-heading); color:var(--color-accent-yellow); }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+
+<header class="site-header">
+  <div class="nav-container">
+    <a href="game.html" class="nav-logo"><span class="logo-icon">🔫</span><span>卡创 · 星际靶场</span></a>
+    <nav>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="game.html">🎮 游戏厅</a></li>
+        <li><a href="index.html">🏠 首页</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-container">
+    <div class="game-container">
+      <div class="section-header">
+        <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;animation:float 2s ease-in-out infinite;">🔫 射击游戏</div>
+        <h1 class="section-title">🦊 火狐的星际靶场</h1>
+        <p class="section-subtitle">火狐的发明又双叒叕失控了！击落失控机械零件，但<strong>千万别打中队友</strong>！<br><small style="color:var(--text-muted);">火狐：这次成功率有23%！比上次高了1%！</small></p>
+      </div>
+
+      <div class="hud">
+        <div class="hud-item"><span class="label">🎯 得分</span><span id="score">0</span></div>
+        <div class="hud-item"><span class="label">❤️ 生命</span><span id="lives">❤️❤️❤️</span></div>
+        <div class="hud-item"><span class="label">💥 连杀</span><span id="combo">x1</span></div>
+        <div class="hud-item"><span class="label">⏱️ 时间</span><span id="timer">60</span>s</div>
+      </div>
+
+      <canvas id="gameCanvas" width="700" height="500"></canvas>
+      <p style="color:var(--text-muted);margin-top:0.8rem;font-size:0.85rem;">🖱️ <strong>点击射击</strong> | 🎯 打陨石/零件 +10~30分 | 💣 打炸弹 +50分但会炸飞周围 | 👥 <strong style="color:#FF7675;">别打队友！扣命！</strong></p>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="js/main.js"></script>
+<script>
+(function(){
+  const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
+  let score=0,lives=3,combo=0,maxCombo=1,timer=60,gameOn=true;
+  const targets=[],particles=[],floats=[],bgStars=[];
+  for(let i=0;i<60;i++) bgStars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.3,s:Math.random()*0.015+0.005,p:Math.random()*Math.PI*2});
+
+  const TYPES={
+    asteroid:{emoji:'🪨',points:10,radius:20,speed:1.2,color:'#888',label:'陨石'},
+    part:{emoji:'⚙️',points:20,radius:16,speed:1.8,color:'#FDCB6E',label:'失控零件'},
+    bomb:{emoji:'💣',points:50,radius:22,speed:0.9,color:'#FF7675',label:'炸弹',explosive:true},
+    crew:{emoji:['🐱','🐼','🐰','🦄','🐧'][Math.floor(Math.random()*5)],points:-50,radius:24,speed:1.5,color:'#55EFC4',label:'队友!',penalty:true},
+  };
+
+  function spawn(){
+    const keys=Object.keys(TYPES);
+    const key=keys[Math.floor(Math.random()*(gameOn?keys.length:0))]||'asteroid';
+    // 队友概率较低
+    const k=(Math.random()<0.1)?'crew':key;
+    const t=TYPES[k],edge=Math.floor(Math.random()*4);
+    let x,y,vx,vy;
+    switch(edge){
+      case 0:x=Math.random()*canvas.width;y=-30;vx=(Math.random()-0.5)*t.speed*2;vy=t.speed;break;
+      case 1:x=canvas.width+30;y=Math.random()*canvas.height;vx=-t.speed;vy=(Math.random()-0.5)*t.speed*2;break;
+      case 2:x=Math.random()*canvas.width;y=canvas.height+30;vx=(Math.random()-0.5)*t.speed*2;vy=-t.speed;break;
+      case 3:x=-30;y=Math.random()*canvas.height;vx=t.speed;vy=(Math.random()-0.5)*t.speed*2;break;
+    }
+    targets.push({x,y,vx,vy,...t,type:k,life:true, wobble:Math.random()*Math.PI*2});
+  }
+
+  function boom(x,y){
+    for(let i=0;i<20;i++) particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,life:25+Math.random()*20,color:'#FDCB6E',r:Math.random()*3+1});
+    // 炸飞周围目标
+    targets.forEach(t=>{if(t.life&&Math.hypot(t.x-x,t.y-y)<80){t.life=false;spawnParticles(t.x,t.y,t.color,10);}});
+  }
+
+  function spawnParticles(x,y,c,n){ for(let i=0;i<n;i++) particles.push({x,y,vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8,life:20+Math.random()*15,color:c,r:Math.random()*3+1}); }
+
+  function floatText(x,y,txt,c){ floats.push({x,y,text:txt,color:c,life:45,vy:-1.5}); }
+
+  canvas.addEventListener('click',e=>{
+    if(!gameOn)return;
+    const rect=canvas.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(canvas.width/rect.width);
+    const my=(e.clientY-rect.top)*(canvas.height/rect.height);
+    // 枪口闪光
+    spawnParticles(mx,my,'#FF7675',5);
+    let hit=false;
+    for(let i=targets.length-1;i>=0;i--){
+      const t=targets[i];
+      if(!t.life)continue;
+      if(Math.hypot(t.x-mx,t.y-my)<t.radius+8){
+        hit=true;t.life=false;
+        if(t.penalty){
+          lives--;combo=0;floatText(t.x,t.y,'打错了! -50','#FF7675');
+          spawnParticles(t.x,t.y,'#FF7675',20);
+          if(lives<=0)endGame();
+        }else{
+          combo++;if(combo>maxCombo)maxCombo=combo;
+          const bonus=Math.min(combo,8)*5;
+          score+=t.points+bonus;
+          floatText(t.x,t.y,`+${t.points+bonus}`,'#FDCB6E');
+          spawnParticles(t.x,t.y,t.color,12);
+          if(t.explosive)boom(t.x,t.y);
+        }
+        if(combo>0&&combo%5===0)floatText(t.x,t.y-20,['Nice!','喵!','Boom!','火狐点赞!'][Math.floor(Math.random()*4)],'#00CEC9');
+        break;
+      }
+    }
+    if(!hit){ combo=0; }
+  });
+
+  function endGame(){
+    gameOn=false;
+    spawnParticles(canvas.width/2,canvas.height/2,'#FF7675',40);
+    const taunts=['火狐：我就说成功率有23%吧！……没说错啊。','企鹅船长：为什么每次都是我来善后。','胖达：要不要趁乱去厨房偷吃点…','彩虹马：伤亡保险了解一下？'];
+    setTimeout(()=>{
+      const ov=document.createElement('div');ov.className='overlay-end';
+      ov.innerHTML=`<div class="end-box">
+        <div style="font-size:4rem;">🦊💥</div><h2>靶场收工！</h2>
+        <p style="color:var(--text-secondary);">${taunts[Math.floor(Math.random()*taunts.length)]}</p>
+        <div class="score">🎯 ${score}</div><p style="color:var(--text-muted);">最大连杀: x${maxCombo}</p>
+        <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+          <button class="btn btn-primary" onclick="location.reload()">🔄 再来一局</button>
+          <a href="game.html" class="btn btn-secondary">🎮 游戏厅</a></div></div>`;
+      document.body.appendChild(ov);
+    },600);
+  }
+
+  let spawnTimer=0;
+  function update(){
+    if(!gameOn)return;
+    spawnTimer++;if(spawnTimer>Math.max(40-(score/50),12)){spawn();spawnTimer=0;}
+    targets.forEach(t=>{t.x+=t.vx;t.y+=t.vy;t.wobble+=0.03;});
+    for(let i=targets.length-1;i>=0;i--){
+      const t=targets[i];
+      if(t.x<-60||t.x>canvas.width+60||t.y<-60||t.y>canvas.height+60)targets.splice(i,1);
+    }
+    particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life--;p.vx*=0.95;p.vy*=0.95;});
+    floats.forEach(f=>{f.y+=f.vy;f.life--;});
+    particles=particles.filter(p=>p.life>0);floats=floats.filter(f=>f.life>0);
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    bgStars.forEach(s=>{s.p+=s.s;ctx.fillStyle=`rgba(255,255,255,${0.2+Math.sin(s.p)*0.2})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();});
+    targets.forEach(t=>{
+      if(!t.life)return;
+      ctx.font=`${t.radius*1.5}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(typeof t.emoji==='string'?t.emoji:t.emoji[0],t.x,t.y+Math.sin(t.wobble)*3);
+      if(t.type==='crew'){
+        ctx.strokeStyle='rgba(85,239,196,0.7)';ctx.lineWidth=2;ctx.setLineDash([4,4]);
+        ctx.beginPath();ctx.arc(t.x,t.y,t.radius+6,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+        ctx.fillStyle='rgba(85,239,196,0.8)';ctx.font='bold 11px sans-serif';
+        ctx.fillText('⚠别打!',t.x,t.y-t.radius-10);
+      }
+      if(t.type==='bomb'){ const g=ctx.createRadialGradient(t.x,t.y,t.radius*0.2,t.x,t.y,t.radius*1.8);g.addColorStop(0,'rgba(255,118,117,0.5)');g.addColorStop(1,'rgba(255,118,117,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(t.x,t.y,t.radius*1.8,0,Math.PI*2);ctx.fill();}
+    });
+    particles.forEach(p=>{const a=p.life/(p.life+10);ctx.fillStyle=p.color.replace(')','').replace('#','');ctx.globalAlpha=a;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r*a,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
+    floats.forEach(f=>{ctx.fillStyle=f.color;ctx.font='bold 16px Quicksand,sans-serif';ctx.textAlign='center';ctx.globalAlpha=f.life/45;ctx.fillText(f.text,f.x,f.y);});ctx.globalAlpha=1;
+    // HUD
+    document.getElementById('score').textContent=score;
+    document.getElementById('combo').textContent='x'+combo;
+    document.getElementById('lives').textContent=Array(Math.max(0,lives)).fill('❤️').join('')||'💀';
+  }
+
+  let timerInterval=setInterval(()=>{if(gameOn&&timer>0){timer--;document.getElementById('timer').textContent=timer;if(timer<=0)endGame();}else clearInterval(timerInterval);},1000);
+
+  function loop(){update();draw();requestAnimationFrame(loop);}
+  for(let i=0;i<5;i++)spawn();
+  loop();
+})();
+</script>
+</body>
+</html>

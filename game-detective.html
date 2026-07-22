@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 企鹅船长的推理时间 · 卡创</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .detective-container { max-width:750px; margin:0 auto; }
+    .case-box { background:var(--bg-card); border-radius:var(--radius-xl); padding:2rem; border:2px solid rgba(0,206,201,0.3); margin-bottom:1.5rem; }
+    .case-box h3 { font-family:var(--font-heading); color:var(--color-accent-teal); font-size:1.5rem; margin-bottom:0.5rem; }
+    .suspect-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:1rem; margin:1.5rem 0; }
+    .suspect-card { background:var(--bg-glass); border-radius:var(--radius-lg); padding:1.2rem; text-align:center; cursor:pointer; border:2px solid transparent; transition:all 0.3s; }
+    .suspect-card:hover { border-color:var(--color-accent-teal); transform:translateY(-4px); box-shadow:var(--shadow-glow-teal); }
+    .suspect-card.selected { border-color:var(--color-accent-yellow); box-shadow:var(--shadow-float); background:rgba(253,203,110,0.1); }
+    .suspect-card .emoji { font-size:3rem; }
+    .suspect-card .name { font-family:var(--font-heading); margin:0.5rem 0; }
+    .clue-list { list-style:none; padding:0; }
+    .clue-list li { padding:0.6rem 1rem; margin:0.4rem 0; background:var(--bg-glass); border-radius:var(--radius-md); border-left:3px solid var(--color-accent-teal); color:var(--text-secondary); cursor:pointer; transition:all 0.2s; }
+    .clue-list li.found { border-left-color:var(--color-accent-yellow); background:rgba(253,203,110,0.1); }
+    .clue-list li:hover { background:var(--bg-card-hover); }
+    .dialog-box { background:var(--bg-glass); border-radius:var(--radius-lg); padding:1.2rem; margin:1rem 0; font-style:italic; color:var(--text-secondary); border-left:4px solid var(--color-primary); }
+    .progress-bar { height:8px; background:var(--bg-glass); border-radius:10px; margin:1rem 0; overflow:hidden; }
+    .progress-bar div { height:100%; background:linear-gradient(90deg,var(--color-accent-teal),var(--color-accent-yellow)); border-radius:10px; transition:width 0.5s; }
+    .btn-accuse { background:var(--color-accent-pink) !important; animation:pulse 1.5s infinite; }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<header class="site-header">
+  <div class="nav-container">
+    <a href="game.html" class="nav-logo"><span class="logo-icon">🔍</span><span>卡创 · 推理室</span></a>
+    <nav><ul class="nav-links" id="navLinks"><li><a href="game.html">🎮 游戏厅</a></li><li><a href="index.html">🏠 首页</a></li></ul></nav>
+  </div>
+</header>
+
+<main>
+<section class="page-container">
+<div class="detective-container">
+  <div class="section-header">
+    <div class="hero-badge" style="display:inline-block;margin-bottom:1rem;">🔍 推理游戏</div>
+    <h1 class="section-title">🐧 企鹅船长的推理时间</h1>
+    <p class="section-subtitle">星际小猫号上发生了一起令人发指的案件！<br>胖达刚烤好的一盘<strong>竹炭星星蛋糕</strong>被人偷吃了！</p>
+  </div>
+
+  <div class="case-box">
+    <h3>📋 案件档案 #042</h3>
+    <p style="color:var(--text-secondary);">
+      <strong>案发时间：</strong>星舰时间 14:30<br>
+      <strong>案发地点：</strong>星际小猫号 · 厨房冷藏柜前<br>
+      <strong>受害者：</strong>胖达（🐼）— 情绪稳定，但坚持要找到凶手<br>
+      <strong>失物：</strong>竹炭星星蛋糕 × 一整盘（12个）<br>
+      <strong>企鹅船长批示：</strong>"这次必须查个水落石出。我的血压已经准备好了。"
+    </p>
+  </div>
+
+  <div id="gameArea">
+    <!-- JS动态填充 -->
+  </div>
+</div>
+</section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="js/main.js"></script>
+<script>
+// 题库系统 — 每次随机一题
+const CASES = [
+  {
+    title:'竹炭星星蛋糕失踪案',
+    victim:'胖达',victimEmoji:'🐼',
+    intro:'胖达的竹炭星星蛋糕在冷藏柜里不翼而飞。现场留下了一撮毛发和几个爪印。企鹅船长召集了所有船员。',
+    clues:[
+      {id:'hair',text:'🔬 一撮橙色的毛',detail:'经化验，是猫科动物的毛发。颜色：橘色。',points:'猫毛'},
+      {id:'print',text:'👣 冰箱前的爪印',detail:'梅花形爪印，尺寸较小。猫科或犬科都有可能。',points:'小爪印'},
+      {id:'crumb',text:'🍰 地上的蛋糕碎屑',detail:'碎屑上有明显的口水痕迹，DNA检测显示…有竹子成分？',points:'竹子DNA'},
+      {id:'time',text:'🕐 不在场证明',detail:'案发时，彩虹马在糖果铺营业；火狐在引擎室；月兔在通信室；小星声称在"探险"。',points:'时间线'},
+    ],
+    suspects:[
+      {id:'xing',name:'小星',emoji:'🐱',motive:'最爱吃胖达的蛋糕，曾偷吃被当场抓获3次',alibi:'声称在探险…但没人看到他',guilty:true,confession:'喵…对不起嘛！我就是路过厨房，蛋糕太香了…我没忍住！那撮毛是我的，爪印也是我的。我错了！'},
+      {id:'huo',name:'火狐',emoji:'🦊',motive:'对蛋糕没兴趣，但可能拿去"做实验"',alibi:'确实在引擎室，有工作日志',guilty:false,confession:'我？我吃那个干嘛。我在修引擎好吗。'},
+      {id:'tu',name:'月兔',emoji:'🐰',motive:'喜欢甜食，但作案时间不匹配',alibi:'在通信室值班，通话记录可查',guilty:false,confession:'我是兔子不是猫！那些爪印一看就是猫科的好吧！'},
+      {id:'ma',name:'彩虹马',emoji:'🦄',motive:'想研究蛋糕配方用于自己的糖果铺',alibi:'糖果铺全天营业，有顾客作证',guilty:false,confession:'我可是正经商人！虽然…确实想研究一下配方…但我没偷！'},
+    ],
+    answer:'xing',
+    conclusion:'企鹅船长看着小星叹了口气："第384次偷吃被抓。你什么时候能长点记性？"小星耷拉着耳朵："但是…真的很好吃嘛…"胖达表示只要小星帮忙做一周蛋糕就原谅他。'
+  },
+  {
+    title:'引擎室爆炸未遂事件',
+    victim:'火狐',victimEmoji:'🦊',
+    intro:'引擎室的紧急制动装置被人动过手脚，差点引发爆炸。火狐发誓不是自己干的（这次真的不是）。企鹅船长展开了调查。',
+    clues:[
+      {id:'tool',text:'🔧 遗落的扳手',detail:'一把特制扳手，上面刻着"Property of 引擎室"。但没有指纹。',points:'扳手'},
+      {id:'note',text:'📝 一张神秘纸条',detail:'纸条上写着："红色按钮别按！"——笔迹歪歪扭扭，像是用嘴叼着笔写的。',points:'纸条'},
+      {id:'fur',text:'🧶 一团黑白毛发',detail:'在制动装置旁发现的毛发。黑白相间，粗短。',points:'黑白毛'},
+      {id:'log',text:'📋 访问记录',detail:'引擎室门禁记录显示，案发前一小时有两个人进入过：企鹅船长和…一个未知身份者。',points:'门禁'},
+    ],
+    suspects:[
+      {id:'penguin',name:'企鹅船长',emoji:'🐧',motive:'想给引擎做安全检查，但忘了通知火狐',alibi:'确实进去过，但只是常规检查',guilty:false,confession:'我是去做安全检查！这是我的职责！虽然忘了告诉火狐…但我绝对没碰制动装置。'},
+      {id:'panda',name:'胖达',emoji:'🐼',motive:'引擎室旁边就是厨房…可能走错了',alibi:'案发时在做蛋糕，面粉还沾在身上',guilty:true,confession:'我…我走错门了。引擎室和厨房的门太像了！然后我看到红色按钮就…好奇…用嘴叼着笔写了警告但是…太迟了。对不起！'},
+      {id:'xing2',name:'小星',emoji:'🐱',motive:'对按钮有天然的…冲动',alibi:'在驾驶舱（这次是真的）',guilty:false,confession:'这次真的不是我！！我有不在场证明！！'},
+      {id:'ma2',name:'彩虹马',emoji:'🦄',motive:'引擎室的星光能量可以给糖果充电',alibi:'在盘点库存，没去过引擎室',guilty:false,confession:'我都没去过引擎室！那个黑白毛一看就是胖达的！'},
+    ],
+    answer:'panda',
+    conclusion:'胖达低下了头："我就想看看那个红色按钮是干啥的…"火狐气炸了："那是紧急制动！！差点把飞船炸了！！"企鹅船长冷静地登记了第 947 起飞船事故。'
+  },
+  {
+    title:'通信室神秘信号事件',
+    victim:'月兔',victimEmoji:'🐰',
+    intro:'月兔在值班时收到了一条来自"喵星总部"的神秘信号，但信号来源追踪显示…信号发射器就在飞船上！有人在恶作剧。',
+    clues:[
+      {id:'device',text:'📡 隐藏的信号发射器',detail:'在通信室天花板夹层中发现。小型设备，手工制作，上面有烧焦的痕迹。',points:'发射器'},
+      {id:'voice',text:'🎤 信号录音',detail:'录音内容是："喵喵喵~星际小猫号，这里是喵星总部，请把所有小鱼干转移到…"后面被掐断了。',points:'录音'},
+      {id:'skill',text:'⚡ 设备焊接痕迹',detail:'焊接工艺粗糙但有创意——典型的自学成才风格。焊点旁边有狐狸毛。',points:'焊接'},
+      {id:'motive',text:'💡 作案动机分析',detail:'谁会想恶搞月兔？谁有技术能力做这种设备？谁喜欢收集小鱼干？',points:'动机'},
+    ],
+    suspects:[
+      {id:'huo3',name:'火狐',emoji:'🦊',motive:'有技术能力，喜欢恶作剧',alibi:'声称在写新发明的文档',guilty:true,confession:'哈哈哈哈哈对不起！我就是想测试一下新做的无线电信标…顺便看看月兔会不会上当。她居然真的去翻仓库找小鱼干了！'},
+      {id:'xing3',name:'小星',emoji:'🐱',motive:'喜欢小鱼干，但没技术能力',alibi:'在驾驶舱…大概吧',guilty:false,confession:'虽然我很想要小鱼干但我连那个设备是啥都看不懂…'},
+      {id:'panda3',name:'胖达',emoji:'🐼',motive:'喜欢小鱼干，但不会做电子设备',alibi:'在厨房，有监控',guilty:false,confession:'如果是我做的，信号内容应该会是"把所有蛋糕"而不是小鱼干。'},
+      {id:'penguin3',name:'企鹅船长',emoji:'🐧',motive:'想测试船员警惕性',alibi:'有作案能力但不会这么无聊',guilty:false,confession:'如果是我策划的演习，会比这个严谨一百倍。这明显是火狐的风格。'},
+    ],
+    answer:'huo3',
+    conclusion:'火狐笑得停不下来："你们应该看看月兔听到小鱼干时的表情！"月兔气鼓鼓地表示要把火狐的通讯频道屏蔽一周。企鹅船长扶额叹气。'
+  }
+];
+
+let currentCase,cluesFound=[],suspectsQuestioned=[],phase='intro';
+
+function startCase(){
+  currentCase=CASES[Math.floor(Math.random()*CASES.length)];
+  cluesFound=[];suspectsQuestioned=[];phase='intro';
+  render();
+}
+
+function findClue(id){
+  if(cluesFound.includes(id))return;
+  cluesFound.push(id);
+  if(cluesFound.length>=currentCase.clues.length){
+    document.querySelectorAll('.clue-list li').forEach(l=>l.classList.add('found'));
+  }
+  render();
+  showToast('🔍 找到了线索！');
+}
+
+function questionSuspect(id){
+  if(suspectsQuestioned.includes(id))return;
+  suspectsQuestioned.push(id);
+  render();
+}
+
+function accuse(id){
+  const s=currentCase.suspects.find(s=>s.id===id);
+  if(s.guilty){
+    phase='win';
+    render();
+    showToast('🎉 破案成功！');
+  }else{
+    phase='wrong';
+    render();
+    showToast('❌ 冤枉好人了！再想想吧…',3000);
+    setTimeout(()=>{phase='investigate';render();},2500);
+  }
+}
+
+function render(){
+  const area=document.getElementById('gameArea');
+  if(!currentCase){startCase();return;}
+
+  const cluesProgress=Math.round(cluesFound.length/currentCase.clues.length*100);
+  const suspectProgress=Math.round(suspectsQuestioned.length/currentCase.suspects.length*100);
+
+  if(phase==='intro'){
+    area.innerHTML=`
+      <div class="case-box">
+        <h3>📁 ${currentCase.title}</h3>
+        <p style="color:var(--text-secondary);">${currentCase.intro}</p>
+        <div class="dialog-box">🐧 <strong>企鹅船长：</strong>"各位，在查明真相之前，谁也不准离开。我们去现场看看。"</div>
+        <div style="text-align:center;margin-top:1rem;">
+          <button class="btn btn-primary" onclick="phase='investigate';render();">🔍 开始调查</button>
+        </div>
+      </div>
+    `;
+  }else if(phase==='investigate'||phase==='wrong'){
+    area.innerHTML=`
+      <div class="case-box">
+        <h3>🔍 收集线索 <span style="font-size:0.8rem;color:var(--text-muted);">(${cluesFound.length}/${currentCase.clues.length})</span></h3>
+        <div class="progress-bar"><div style="width:${cluesProgress}%"></div></div>
+        <ul class="clue-list">
+          ${currentCase.clues.map(c=>`
+            <li class="${cluesFound.includes(c.id)?'found':''}" onclick="findClue('${c.id}')">
+              ${c.text}
+              ${cluesFound.includes(c.id)?`<br><small style="color:var(--color-accent-yellow);">→ ${c.detail}</small>`:`<small style="color:var(--text-muted);">（点击调查）</small>`}
+            </li>`).join('')}
+        </ul>
+      </div>
+      <div class="case-box">
+        <h3>👥 询问嫌疑人 <span style="font-size:0.8rem;color:var(--text-muted);">(${suspectsQuestioned.length}/${currentCase.suspects.length})</span></h3>
+        <div class="progress-bar"><div style="width:${suspectProgress}%"></div></div>
+        <div class="suspect-grid">
+          ${currentCase.suspects.map(s=>`
+            <div class="suspect-card" onclick="questionSuspect('${s.id}')">
+              <div class="emoji">${s.emoji}</div>
+              <div class="name">${s.name}</div>
+              ${suspectsQuestioned.includes(s.id)?`
+                <p style="font-size:0.75rem;color:var(--color-accent-teal);margin-top:0.3rem;">🗣️ "${s.alibi}"</p>
+                <p style="font-size:0.7rem;color:var(--text-muted);">动机: ${s.motive}</p>
+              `:`<small style="color:var(--text-muted);">（点击询问）</small>`}
+            </div>`).join('')}
+        </div>
+      </div>
+      ${cluesFound.length>=2?`
+      <div style="text-align:center;margin:1.5rem 0;">
+        <p style="color:var(--text-muted);margin-bottom:0.5rem;">线索足够多了，要指认真凶吗？</p>
+        <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
+          ${currentCase.suspects.map(s=>`<button class="btn btn-accent btn-accuse" onclick="accuse('${s.id}')">指认 ${s.emoji}${s.name}</button>`).join('')}
+        </div>
+      </div>`:''}
+    `;
+  }else if(phase==='win'){
+    const guilty=currentCase.suspects.find(s=>s.guilty);
+    area.innerHTML=`
+      <div class="case-box" style="border-color:var(--color-accent-teal);">
+        <h3>🎉 案件告破！</h3>
+        <div style="font-size:5rem;text-align:center;">🔓</div>
+        <p style="color:var(--color-accent-teal);font-size:1.2rem;text-align:center;"><strong>真凶是：${guilty.emoji} ${guilty.name}！</strong></p>
+        <div class="dialog-box">${guilty.emoji} <strong>${guilty.name}：</strong>"${guilty.confession}"</div>
+        <p style="color:var(--text-secondary);margin-top:1rem;">${currentCase.conclusion}</p>
+        <div style="text-align:center;margin-top:1.5rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="startCase();render();">🔍 下一个案件</button>
+          <a href="game.html" class="btn btn-secondary">🎮 游戏厅</a>
+        </div>
+      </div>
+    `;
+  }
+}
+
+startCase();
+</script>
+</body>
+</html>
