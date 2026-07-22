@@ -19,9 +19,7 @@
 
 ## 🚀 在线访问
 
-🌐 **GitHub Pages：** [https://你的用户名.github.io/cartoon-website](https://你的用户名.github.io/cartoon-website)
-
-> 💡 部署后请将上面的链接替换为实际的 GitHub Pages URL。
+🌐 **GitHub Pages：** [https://csr000-byte.github.io/cartoon-website/](https://csr000-byte.github.io/cartoon-website/)
 
 ---
 
